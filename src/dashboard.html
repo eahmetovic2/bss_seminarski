@@ -254,17 +254,17 @@
                 </div>
 
                 
-                <input type="Number" name="nscore" value="nscore" max="60" min="12"> Nscore <br>
-                <input type="Number" name="escore" value="escore" max="60" min="12"> Escore <br>
-                <input type="Number" name="oscore" value="oscore" max="60" min="12"> Oscore <br>
-                <input type="Number" name="ascore" value="ascore" max="60" min="12"> Ascore <br>
-                <input type="Number" name="cscore" value="cscore" max="60" min="12"> Cscore <br>
-                <input type="Number" name="impulsiveness" value="impulsiveness" max="60" min="12"> Impulsiveness <br>
-                <input type="Number" name="ss" value="ss" max="60" min="12"> Sensation seeing <br>
+                <input type="Number" id="nscore" value="nscore" max="60" min="12"> Nscore <br>
+                <input type="Number" id="escore" value="escore" max="60" min="12"> Escore <br>
+                <input type="Number" id="oscore" value="oscore" max="60" min="12"> Oscore <br>
+                <input type="Number" id="ascore" value="ascore" max="60" min="12"> Ascore <br>
+                <input type="Number" id="cscore" value="cscore" max="60" min="12"> Cscore <br>
+                <input type="Number" id="impulsiveness" value="impulsiveness" max="60" min="12"> Impulsiveness <br>
+                <input type="Number" id="ss" value="ss" max="60" min="12"> Sensation seeing <br>
 
                 <div class="btn-group">
                   <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span id="drogaDropdown">Drug</span>
+                    <span id="drogaDropdown">Alcohol</span>
                   </button>
                   <div class="dropdown-menu">
                     <a class="dropdown-item" onclick="selectDrug('Alcohol')">Alcohol</a>
@@ -288,8 +288,30 @@
                     <a class="dropdown-item" onclick="selectDrug('VSA')">VSA</a>
                   </div>
                 </div>
+
+
+                <div class="btn-group">
+                  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span id="labelDropdown">Age</span>
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" onclick="selectLabel('Age')">Age</a>
+                    <a class="dropdown-item" onclick="selectLabel('Gender')">Gender</a>
+                    <a class="dropdown-item" onclick="selectLabel('Education')">Education</a>
+                    <a class="dropdown-item" onclick="selectLabel('Ethnicity')">Ethnicity</a>
+                    <a class="dropdown-item" onclick="selectLabel('Nscore')">Nscore</a>
+                    <a class="dropdown-item" onclick="selectLabel('Escore')">Escore</a>
+                    <a class="dropdown-item" onclick="selectLabel('Oscore')">Oscore</a>
+                    <a class="dropdown-item" onclick="selectLabel('Ascore')">Ascore</a>
+                    <a class="dropdown-item" onclick="selectLabel('Cscore')">Cscore</a>
+                    <a class="dropdown-item" onclick="selectLabel('Impulsiveness')">Impulsiveness</a>
+                    <a class="dropdown-item" onclick="selectLabel('Sensation seeing')">Sensation seeing</a>
+                    <a class="dropdown-item" onclick="selectLabel('Drug')">Drug</a>
+                  </div>
+                </div>
+                
                 <br>
-                <button onclick="gumb1()">BarChart</button>
+                <button onclick="dobaviSPocetne()">BarChart</button>
                 <button onclick="napraviDoughnutChart()">DoughnutChart</button>
                 <button onclick="napraviLineChart()">LineChart</button>
                 

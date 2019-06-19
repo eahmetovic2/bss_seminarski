@@ -27,7 +27,9 @@ var state = {
   ascore: null,
   csore: null,
   impulsiveness: null,
-  ss: null
+  ss: null,
+  drug: "Alcohol",
+  label: "Age"
 };
 
 var papa2 = function papa2(textString) {
@@ -152,6 +154,13 @@ function ObradiDrogu(podaci, ucestalost, droga) {
   }
 }
 
+function ObradiSpol(podaci, spol) {
+  if (podaci) {
+    var novi = podaci.filter(uslovSpol, spol);
+    return novi;
+  }
+}
+
 function ObradiEdukaciju(podaci, stepenE) {
   if (podaci) {
     var novi = podaci.filter(uslovEdukacija, stepenE);
@@ -196,6 +205,10 @@ function CountGodine(podaci, godine) {
 
 function CountDrogu(podaci, ucestalost, droga) {
   return ObradiDrogu(podaci, ucestalost, droga).length;
+}
+
+function CountSpol(podaci, spol) {
+  return ObradiSpol(podaci, spol).length;
 }
 
 function SveGod(podaci) {
@@ -382,21 +395,97 @@ function napraviPolarChart() {
   });
 }
 
-function gumb1() {
-  var values = [];
-  var x = document.getElementsByName("gender");
-  x.forEach(function (element) {
-    console.log(element.name, element.checked, element.value);
-  });
-  UcitajSS().then(function (rezultat) {
-    return console.log(rezultat);
+function dobaviSPocetne() {
+  var povratni = {};
+  var genders = Array.prototype.slice.call(document.getElementsByName("gender"));
+  var genderVal = genders.filter(function (element) {
+    return element.checked;
+  }).map(function (el) {
+    return el.value;
+  }); //console.log(element.name, element.checked, element.value)
+
+  var ages = Array.prototype.slice.call(document.getElementsByName("godine"));
+  var ageVal = ages.filter(function (element) {
+    return element.checked;
+  }).map(function (el) {
+    return el.value;
+  }); //console.log(element.name, element.checked, element.value)
+
+  var educations = Array.prototype.slice.call(document.getElementsByName("education"));
+  var educationVal = educations.filter(function (element) {
+    return element.checked;
+  }).map(function (el) {
+    return el.value;
+  }); //console.log(element.name, element.checked, element.value)
+
+  var ethnicitys = Array.prototype.slice.call(document.getElementsByName("ethnicity"));
+  var ethnicityVal = ethnicitys.filter(function (element) {
+    return element.checked;
+  }).map(function (el) {
+    return el.value;
+  }); //console.log(element.name, element.checked, element.value)
+
+  var nscore = document.getElementById("nscore").value;
+  var escore = document.getElementById("escore").value;
+  var oscore = document.getElementById("oscore").value;
+  var ascore = document.getElementById("ascore").value;
+  var cscore = document.getElementById("cscore").value;
+  var impulsiveness = document.getElementById("impulsiveness").value;
+  var ss = document.getElementById("ss").value;
+  povratni.genders = genderVal;
+  povratni.ages = ageVal;
+  povratni.educations = educationVal;
+  povratni.ethnicitys = ethnicityVal;
+  povratni.nscore = nscore;
+  povratni.escore = escore;
+  povratni.oscore = oscore;
+  povratni.ascore = ascore;
+  povratni.cscore = cscore;
+  povratni.impulsiveness = impulsiveness;
+  povratni.ss = ss;
+  povratni.drug = state.drug;
+  povratni.label = state.label;
+  finalizirajPodatke(povratni);
+  return povratni; //UcitajSS().then(rezultat => console.log(rezultat))
+}
+
+function finalizirajPodatke(podaciF) {
+  var vrati = {
+    data: [],
+    label: []
+  };
+  Inicijaliziraj().then(function (podaci) {
+    if (podaciF.ages != null) {
+      console.log(podaciF);
+      podaciF.ages.forEach(function (element) {
+        vrati.data = vrati.data.concat(ObradiGodine(podaci, element));
+      });
+      podaci = vrati.data;
+    }
+
+    if (podaciF.genders != null) {
+      podaciF.genders.forEach(function (element) {
+        vrati.data = vrati.data.concat(ObradiSpol(podaci, element));
+      });
+      podaci = vrati.data;
+    }
+
+    console.log(vrati);
   });
 }
 
 function selectDrug(droga2) {
   var x = document.getElementById("drogaDropdown");
   x.innerHTML = droga2;
+  state.drug = droga2;
   console.log("DROGA", droga2);
+}
+
+function selectLabel(labela) {
+  var x = document.getElementById("labelDropdown");
+  x.innerHTML = labela;
+  state.label = labela;
+  console.log("Labela", labela);
 }
 
 napraviLineChart();
