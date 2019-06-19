@@ -193,7 +193,7 @@
           <div class="animated fadeIn">
             <div class="card-columns cols-2">
               <div class="card">
-                <div class="card-header">Line Chart
+                <div class="card-header">Chart
                   <div class="card-header-actions">
                     <a class="card-header-action" href="http://www.chartjs.org" target="_blank">
                       <small class="text-muted">docs</small>
@@ -203,18 +203,96 @@
                 <div class="card-body">
                   <div class="chart-wrapper">
                     <canvas id="canvas-1"></canvas>
+                    <canvas id="canvas-2"></canvas>
+                    <canvas id="canvas-3"></canvas>
                   </div>
                 </div>
               </div>
               <div>
-                <input type="checkbox" name="godine1" value="18-24"> 18-24 <br>
-                <input type="checkbox" name="godine2" value="18-24"> 18-24 <br>
-                <input type="checkbox" name="godine3" value="18-24"> 18-24 <br>
-                <input type="checkbox" name="godine4" value="18-24"> 18-24 <br>
+                <div>
+                  Age
+                  <br>
+                  <input type="checkbox" name="godine" value="18-24"> 18-24 <br>
+                  <input type="checkbox" name="godine" value="25-34"> 25-34 <br>
+                  <input type="checkbox" name="godine" value="35-44"> 35-44 <br>
+                  <input type="checkbox" name="godine" value="45-54"> 45-54 <br>
+                  <input type="checkbox" name="godine" value="55-64"> 55-64 <br>
+                  <input type="checkbox" name="godine" value="65+"> 65+ <br>
+                </div>
+                
+                <div>
+                  Gender
+                  <br>
+                  <input type="checkbox" name="gender" value="Female"> Female <br>
+                  <input type="checkbox" name="gender" value="Male"> Male <br>
+                </div>
+                
+                <div>
+                  Education 
+                  <br>
+                  <input type="checkbox" name="education" value="Left school before 16 years"> Left school before 16 years <br>
+                  <input type="checkbox" name="education" value="Left school at 16 years"> Left school at 16 years <br>
+                  <input type="checkbox" name="education" value="Left school at 17 years"> Left school at 17 years <br>
+                  <input type="checkbox" name="education" value="Left school at 18 years"> Left school at 18 years <br>
+                  <input type="checkbox" name="education" value="Some college or university, no certificate or degree"> Some college or university, no certificate or degree <br>
+                  <input type="checkbox" name="education" value="Professional certificate/ diploma"> Professional certificate/ diploma <br>
+                  <input type="checkbox" name="education" value="University degree"> University degree <br>
+                  <input type="checkbox" name="education" value="Masters degree"> Masters degree <br>
+                  <input type="checkbox" name="education" value="Doctorate degree"> Doctorate degree <br>
+                </div>
+                
+                <div>
+                  Ethnicity 
+                  <br>
+                  <input type="checkbox" name="ethnicity" value="Asian"> Asian <br>
+                  <input type="checkbox" name="ethnicity" value="Black"> Black <br>
+                  <input type="checkbox" name="ethnicity" value="Mixed-Black/Asian"> Mixed-Black/Asian <br>
+                  <input type="checkbox" name="ethnicity" value="Mixed-White/Asian"> Mixed-White/Asian <br>
+                  <input type="checkbox" name="ethnicity" value="Mixed-White/Black"> Mixed-White/Black <br>
+                  <input type="checkbox" name="ethnicity" value="White"> White <br>
+                  <input type="checkbox" name="ethnicity" value="Other"> Other <br>
+                </div>
+
+                
+                <input type="Number" name="nscore" value="nscore" max="60" min="12"> Nscore <br>
+                <input type="Number" name="escore" value="escore" max="60" min="12"> Escore <br>
+                <input type="Number" name="oscore" value="oscore" max="60" min="12"> Oscore <br>
+                <input type="Number" name="ascore" value="ascore" max="60" min="12"> Ascore <br>
+                <input type="Number" name="cscore" value="cscore" max="60" min="12"> Cscore <br>
+                <input type="Number" name="impulsiveness" value="impulsiveness" max="60" min="12"> Impulsiveness <br>
+                <input type="Number" name="ss" value="ss" max="60" min="12"> Sensation seeing <br>
+
+                <div class="btn-group">
+                  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span id="drogaDropdown">Drug</span>
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" onclick="selectDrug('Alcohol')">Alcohol</a>
+                    <a class="dropdown-item" onclick="selectDrug('Amphet')">Amphet</a>
+                    <a class="dropdown-item" onclick="selectDrug('Amyl')">Amyl</a>
+                    <a class="dropdown-item" onclick="selectDrug('Benzos')">Benzos</a>
+                    <a class="dropdown-item" onclick="selectDrug('Caff')">Caff</a>
+                    <a class="dropdown-item" onclick="selectDrug('Cannabis')">Cannabis</a>
+                    <a class="dropdown-item" onclick="selectDrug('Choc')">Choc</a>
+                    <a class="dropdown-item" onclick="selectDrug('Coke')">Coke</a>
+                    <a class="dropdown-item" onclick="selectDrug('Crack')">Crack</a>
+                    <a class="dropdown-item" onclick="selectDrug('Ecstasy')">Ecstasy</a>
+                    <a class="dropdown-item" onclick="selectDrug('Heroin')">Heroin</a>
+                    <a class="dropdown-item" onclick="selectDrug('Ketamine')">Ketamine</a>
+                    <a class="dropdown-item" onclick="selectDrug('Legalh')">Legalh</a>
+                    <a class="dropdown-item" onclick="selectDrug('LSD')">LSD</a>
+                    <a class="dropdown-item" onclick="selectDrug('Meth')">Meth</a>
+                    <a class="dropdown-item" onclick="selectDrug('Mushrooms')">Mushrooms</a>
+                    <a class="dropdown-item" onclick="selectDrug('Nicotine')">Nicotine</a>
+                    <a class="dropdown-item" onclick="selectDrug('Semer')">Semer</a>
+                    <a class="dropdown-item" onclick="selectDrug('VSA')">VSA</a>
+                  </div>
+                </div>
+                <br>
                 <button onclick="gumb1()">BarChart</button>
                 <button onclick="napraviDoughnutChart()">DoughnutChart</button>
                 <button onclick="napraviLineChart()">LineChart</button>
-
+                
 
               </div>
               

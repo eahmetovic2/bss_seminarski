@@ -127,7 +127,7 @@ function UcitajSS() {
 }
 
 function uslovGodine(human) {
-  if (this == "18-24") return human.Age == -0.95197;else if (this == "25-34") return human.Age == -0.07854;else if (this == "35-44") return human.Age == 0.49788;else if (this == "45-54") return human.Age == 1.09449;else if (this == "55-64") return human.Age == 1.82213;else if (this == "65-74") return human.Age == 2.59171;
+  if (this == "18-24") return human.Age == -0.95197;else if (this == "25-34") return human.Age == -0.07854;else if (this == "35-44") return human.Age == 0.49788;else if (this == "45-54") return human.Age == 1.09449;else if (this == "55-64") return human.Age == 1.82213;else if (this == "65+") return human.Age == 2.59171;
 }
 
 function uslovSpol(human) {
@@ -168,7 +168,7 @@ function ObradiGodine(podaci, godine) {
 }
 
 function godLabele() {
-  return ["18-24", "25-34", "35-44", "45-54", "55-64", "65-74"];
+  return ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"];
 }
 
 function drugLabele() {
@@ -209,6 +209,12 @@ function SveGod(podaci) {
 
 function napraviLineChart() {
   Inicijaliziraj().then(function (result) {
+    var canvas1 = document.getElementById("canvas-1");
+    var canvas2 = document.getElementById("canvas-2");
+    var canvas3 = document.getElementById("canvas-3");
+    canvas1.style.display = "block";
+    canvas2.style.display = "none";
+    canvas3.style.display = "none";
     var lineChart = new Chart($('#canvas-1'), {
       type: 'line',
       data: {
@@ -241,7 +247,13 @@ function napraviBarChart() {
     });
     console.log(data);
     console.log(godineL);
-    var barChart = new Chart($('#canvas-1'), {
+    var canvas1 = document.getElementById("canvas-1");
+    var canvas2 = document.getElementById("canvas-2");
+    var canvas3 = document.getElementById("canvas-3");
+    canvas1.style.display = "none";
+    canvas2.style.display = "block";
+    canvas3.style.display = "none";
+    var barChart = new Chart($('#canvas-2'), {
       type: 'bar',
       data: {
         labels: godineL,
@@ -276,7 +288,13 @@ function napraviDoughnutChart() {
       data2.push(godDroga.length);
     }); // eslint-disable-next-line no-unused-vars
 
-    var doughnutChart = new Chart($('#canvas-1'), {
+    var canvas1 = document.getElementById("canvas-1");
+    var canvas2 = document.getElementById("canvas-2");
+    var canvas3 = document.getElementById("canvas-3");
+    canvas1.style.display = "none";
+    canvas2.style.display = "none";
+    canvas3.style.display = "block";
+    var doughnutChart = new Chart($('#canvas-3'), {
       type: 'doughnut',
       data: {
         labels: godineL,
@@ -366,13 +384,19 @@ function napraviPolarChart() {
 
 function gumb1() {
   var values = [];
-  var x = document.getElementsByTagName("input");
+  var x = document.getElementsByName("gender");
   x.forEach(function (element) {
-    console.log(element.name, element.checked);
+    console.log(element.name, element.checked, element.value);
   });
   UcitajSS().then(function (rezultat) {
     return console.log(rezultat);
   });
+}
+
+function selectDrug(droga2) {
+  var x = document.getElementById("drogaDropdown");
+  x.innerHTML = droga2;
+  console.log("DROGA", droga2);
 }
 
 napraviLineChart();
