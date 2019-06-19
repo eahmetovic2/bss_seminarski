@@ -141,9 +141,9 @@ function uslovGodine(human) {
 
 function uslovSpol(human) {
   if(this=="Female")
-    return human.Age==0.48246 ;
+    return human.Gender==0.48246;
   else if(this=="Male")
-    return human.Age==-0.48246;
+    return human.Gender==-0.48246;
 }
 
 function uslovEdukacija(human) {
@@ -504,14 +504,18 @@ function finalizirajPodatke(podaciF) {
   Inicijaliziraj().then(podaci=> {
     
       if(podaciF.ages != null) {
-        console.log(podaciF);
         podaciF.ages.forEach(element =>{
           vrati.data=vrati.data.concat( ObradiGodine(podaci,element));
         });
         podaci=vrati.data;
       }
+      console.log(podaci);
+      vrati.data = [];
       if(podaciF.genders != null) {
+        console.log(podaciF);
         podaciF.genders.forEach(element =>{
+          console.log(element);
+          console.log(podaci);
           vrati.data=vrati.data.concat( ObradiSpol(podaci,element));
         });
         podaci=vrati.data;
