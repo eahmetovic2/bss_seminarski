@@ -1,5 +1,9 @@
 "use strict";
 
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 /* eslint-disable object-curly-newline */
 
 /* global Chart */
@@ -132,16 +136,50 @@ function uslovGodine(human) {
   if (this == "18-24") return human.Age == -0.95197;else if (this == "25-34") return human.Age == -0.07854;else if (this == "35-44") return human.Age == 0.49788;else if (this == "45-54") return human.Age == 1.09449;else if (this == "55-64") return human.Age == 1.82213;else if (this == "65+") return human.Age == 2.59171;
 }
 
+function uslovEtnicitet(human) {
+  if (this == "Asian") return human.Ethnicity == -0.50212;else if (this == "Black") return human.Ethnicity == -1.10702;else if (this == "Mixed-Black/Asian") return human.Ethnicity == 1.90725;else if (this == "Mixed-White/Asian") return human.Ethnicity == 0.12600;else if (this == "Mixed-White/Black") return human.Ethnicity == -0.22166;else if (this == "Other") return human.Ethnicity == 0.11440;else if (this == "White") return human.Ethnicity == -0.31685;
+}
+
 function uslovSpol(human) {
   if (this == "Female") return human.Gender == 0.48246;else if (this == "Male") return human.Gender == -0.48246;
 }
 
 function uslovEdukacija(human) {
-  if (this == "Left school before 16 years") return human.Age == -2.43591;else if (this == "Left school at 16 years") return human.Age == -1.73790;else if (this == "Left school at 17 years") return human.Age == -1.43719;else if (this == "Left school at 18 years") return human.Age == -1.22751;else if (this == "Some college or university, no certificate or degree") return human.Age == -0.61113;else if (this == "Professional certificate/ diploma") return human.Age == -0.05921;else if (this == "University degree") return human.Age == 0.45468;else if (this == "Masters degree") return human.Age == 1.16365;else if (this == "Doctorate degree") return human.Age == 1.98437;
+  if (this == "Left school before 16 years") return human.Education == -2.43591;else if (this == "Left school at 16 years") return human.Education == -1.73790;else if (this == "Left school at 17 years") return human.Education == -1.43719;else if (this == "Left school at 18 years") return human.Education == -1.22751;else if (this == "Some college or university, no certificate or degree") return human.Education == -0.61113;else if (this == "Professional certificate/ diploma") return human.Education == -0.05921;else if (this == "University degree") return human.Education == 0.45468;else if (this == "Masters degree") return human.Education == 1.16365;else if (this == "Doctorate degree") return human.Education == 1.98437;
 }
 
 function uslovDroga(human) {
   if (this.ucestalost == "Never Used") return human[this.droga] == 0;else if (this.ucestalost == "Used over a Decade Ago") return human[this.droga] == 1;else if (this.ucestalost == "Used in Last Decade") return human[this.droga] == 2;else if (this.ucestalost == "Used in Last Year") return human[this.droga] == 3;else if (this.ucestalost == "Used in Last Month") return human[this.droga] == 4;else if (this.ucestalost == "Used in Last Week") return human[this.droga] == 5;else if (this.ucestalost == "Used in Last Day") return human[this.droga] == 6;
+}
+
+function uslovScore(human) {
+  var _this = this;
+
+  var vrijednost = this.pom.find(function (element) {
+    return element.Nscore == _this.intenzitetScore;
+  }).Value;
+  return human.Nscore == vrijednost;
+}
+
+function ObradiScore(podaci, vrstaScore, intenzitetScore) {
+  return new Promise(function (resolve) {
+    if (podaci) {
+      fetch('../../../' + vrstaScore + '.csv').then(function (response) {
+        return response.text();
+      }).then(function (text) {
+        var pom = papa2(text);
+        console.log(pom);
+        console.log("VRSTA I INT", vrstaScore, intenzitetScore);
+        var novi = podaci.filter(uslovScore, {
+          vrstaScore: vrstaScore,
+          intenzitetScore: intenzitetScore,
+          pom: pom
+        });
+        console.log("NOVI", novi);
+        resolve(novi);
+      });
+    }
+  });
 }
 
 function ObradiDrogu(podaci, ucestalost, droga) {
@@ -157,6 +195,13 @@ function ObradiDrogu(podaci, ucestalost, droga) {
 function ObradiSpol(podaci, spol) {
   if (podaci) {
     var novi = podaci.filter(uslovSpol, spol);
+    return novi;
+  }
+}
+
+function ObradiEtnicitet(podaci, etnicitet) {
+  if (podaci) {
+    var novi = podaci.filter(uslovEtnicitet, etnicitet);
     return novi;
   }
 }
@@ -187,15 +232,6 @@ function drugLabele() {
 function edukacijaLabele() {
   return ["Left school before 16 years", "Left school at 16 years", "Left school at 17 years", "Left school at 18 years", "Some college or university, no certificate or degree", "Professional certificate/ diploma", "University degree", "Masters degree", "Doctorate degree"];
 }
-
-0;
-/*function edukacijaLabele(){
-  return [
-      {nscore: 12,cases:1, value:  -3.46436}
-
-  ]
-
-}*/
 
 function CountGodine(podaci, godine) {
   var novi = ObradiGodine(podaci, godine); //console.log(novi.length);
@@ -429,9 +465,9 @@ function dobaviSPocetne() {
   var escore = document.getElementById("escore").value;
   var oscore = document.getElementById("oscore").value;
   var ascore = document.getElementById("ascore").value;
-  var cscore = document.getElementById("cscore").value;
-  var impulsiveness = document.getElementById("impulsiveness").value;
-  var ss = document.getElementById("ss").value;
+  var cscore = document.getElementById("cscore").value; //var impulsiveness = document.getElementById("impulsiveness").value;
+  //var ss  = document.getElementById("ss").value;
+
   povratni.genders = genderVal;
   povratni.ages = ageVal;
   povratni.educations = educationVal;
@@ -440,43 +476,121 @@ function dobaviSPocetne() {
   povratni.escore = escore;
   povratni.oscore = oscore;
   povratni.ascore = ascore;
-  povratni.cscore = cscore;
-  povratni.impulsiveness = impulsiveness;
-  povratni.ss = ss;
+  povratni.cscore = cscore; //povratni.impulsiveness = impulsiveness;
+  //povratni.ss = ss;
+
   povratni.drug = state.drug;
   povratni.label = state.label;
   finalizirajPodatke(povratni);
   return povratni; //UcitajSS().then(rezultat => console.log(rezultat))
 }
 
-function finalizirajPodatke(podaciF) {
-  var vrati = {
-    data: [],
-    label: []
-  };
-  Inicijaliziraj().then(function (podaci) {
-    if (podaciF.ages != null) {
-      podaciF.ages.forEach(function (element) {
-        vrati.data = vrati.data.concat(ObradiGodine(podaci, element));
-      });
-      podaci = vrati.data;
-    }
+function finalizirajPodatke(_x) {
+  return _finalizirajPodatke.apply(this, arguments);
+}
 
-    console.log(podaci);
-    vrati.data = [];
+function _finalizirajPodatke() {
+  _finalizirajPodatke = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee(podaciF) {
+    var vrati, podaci;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            vrati = {
+              data: [],
+              label: []
+            };
+            console.log("PODACIFFF", podaciF);
+            _context.next = 4;
+            return Inicijaliziraj();
 
-    if (podaciF.genders != null) {
-      console.log(podaciF);
-      podaciF.genders.forEach(function (element) {
-        console.log(element);
-        console.log(podaci);
-        vrati.data = vrati.data.concat(ObradiSpol(podaci, element));
-      });
-      podaci = vrati.data;
-    }
+          case 4:
+            podaci = _context.sent;
+            //Inicijaliziraj().then(podaci=> {
+            console.log("PODACI", podaci);
 
-    console.log(vrati);
-  });
+            if (podaciF.ages != null && podaciF.ages.length > 0) {
+              podaciF.ages.forEach(function (element) {
+                vrati.data = vrati.data.concat(ObradiGodine(podaci, element));
+              });
+              podaci = vrati.data;
+            }
+
+            if (podaciF.genders != null && podaciF.genders.length > 0) {
+              vrati.data = [];
+              podaciF.genders.forEach(function (element) {
+                vrati.data = vrati.data.concat(ObradiSpol(podaci, element));
+              });
+              podaci = vrati.data;
+            }
+
+            if (podaciF.educations != null && podaciF.educations.length > 0) {
+              vrati.data = [];
+              podaciF.educations.forEach(function (element) {
+                vrati.data = vrati.data.concat(ObradiEdukaciju(podaci, element));
+              });
+              podaci = vrati.data;
+            }
+
+            if (podaciF.ethnicitys != null && podaciF.ethnicitys.length > 0) {
+              vrati.data = [];
+              podaciF.ethnicitys.forEach(function (element) {
+                vrati.data = vrati.data.concat(ObradiEtnicitet(podaci, element));
+              });
+              podaci = vrati.data;
+            }
+
+            if (!(podaciF.nscore != null && podaciF.nscore != "")) {
+              _context.next = 14;
+              break;
+            }
+
+            vrati.data = [];
+            _context.next = 14;
+            return ObradiScore(podaci, "nscore", podaciF.nscore).then(function (results) {
+              vrati.data = results;
+              podaci = vrati.data;
+            });
+
+          case 14:
+            if (!(podaciF.escore != null && podaciF.escore != "")) {
+              _context.next = 18;
+              break;
+            }
+
+            vrati.data = [];
+            _context.next = 18;
+            return ObradiScore(podaci, "escore", podaciF.escore).then(function (results) {
+              vrati.data = results;
+              podaci = vrati.data;
+            });
+
+          case 18:
+            if (!(podaciF.ascore != null && podaciF.ascore != "")) {
+              _context.next = 22;
+              break;
+            }
+
+            vrati.data = [];
+            _context.next = 22;
+            return ObradiScore(podaci, "ascore", podaciF.ascore).then(function (results) {
+              vrati.data = results;
+              podaci = vrati.data;
+            });
+
+          case 22:
+            console.log(vrati); //})
+
+          case 23:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+  return _finalizirajPodatke.apply(this, arguments);
 }
 
 function selectDrug(droga2) {
