@@ -17,6 +17,16 @@ const random = () => Math.round(Math.random() * 100)
 
 let finRez=null;
 
+var state= {
+  nscore:null,
+  escore:null,
+  oscore:null,
+  ascore:null,
+  csore:null,
+  impulsiveness:null,
+  ss:null
+}
+
 const papa2 = (textString) => {
     var data = Papa.parse(textString,{header:true});
     finRez=data.data;
@@ -25,7 +35,7 @@ const papa2 = (textString) => {
 
 function Inicijaliziraj() {
   return new Promise(resolve => {
-    fetch('../../../Book1.csv')
+    fetch('../../../DataSet.csv')
     .then(response => response.text())
     .then(text => {
       let pom=papa2(text);
@@ -36,17 +46,81 @@ function Inicijaliziraj() {
 
 function UcitajNscore() {
   return new Promise(resolve => {
-    console.log(USLO);
     fetch('../../../nscore.csv')
     .then(response => response.text())
     .then(text => {
       let pom=papa2(text);
-      console.log(text);
-      console.log(pom);
       resolve(pom)
     })
   });
 }
+
+function UcitajEscore() {
+  return new Promise(resolve => {
+    fetch('../../../escore.csv')
+    .then(response => response.text())
+    .then(text => {
+      let pom=papa2(text);
+      resolve(pom)
+    })
+  });
+}
+
+function UcitajOscore() {
+  return new Promise(resolve => {
+    fetch('../../../oscore.csv')
+    .then(response => response.text())
+    .then(text => {
+      let pom=papa2(text);
+      resolve(pom)
+    })
+  });
+}
+
+function UcitajAscore() {
+  return new Promise(resolve => {
+    fetch('../../../ascore.csv')
+    .then(response => response.text())
+    .then(text => {
+      let pom=papa2(text);
+      resolve(pom)
+    })
+  });
+}
+
+function UcitajCscore() {
+  return new Promise(resolve => {
+    fetch('../../../cscore.csv')
+    .then(response => response.text())
+    .then(text => {
+      let pom=papa2(text);
+      resolve(pom)
+    })
+  });
+}
+
+function UcitajImpulsiveness() {
+  return new Promise(resolve => {
+    fetch('../../../impulsiveness.csv')
+    .then(response => response.text())
+    .then(text => {
+      let pom=papa2(text);
+      resolve(pom)
+    })
+  });
+}
+
+function UcitajSS() {
+  return new Promise(resolve => {
+    fetch('../../../ss.csv')
+    .then(response => response.text())
+    .then(text => {
+      let pom=papa2(text);
+      resolve(pom)
+    })
+  });
+}
+
 
 function uslovGodine(human) {
   if(this=="18-24")
@@ -149,20 +223,15 @@ function edukacijaLabele(){
   "Professional certificate/ diploma","University degree","Masters degree","Doctorate degree"]
 }
 
-function edukacijaLabele(){
-  return  [ "Left school before 16 years","Left school at 16 years",
-  "Left school at 17 years","Left school at 18 years",
-  "Some college or university, no certificate or degree",
-  "Professional certificate/ diploma","University degree","Masters degree","Doctorate degree"]
-}
+0
 
-function edukacijaLabele(){
+/*function edukacijaLabele(){
   return [
       {nscore: 12,cases:1, value:  -3.46436}
 
   ]
 
-}
+}*/
 
 
 function CountGodine(podaci,godine) {
@@ -358,10 +427,10 @@ function gumb1() {
   var values = [];
   var x = document.getElementsByTagName("input");
   x.forEach(element => {
-    console.log(element.name,element.checked);
+    console.log(element.name, element.checked)
   });
-  UcitajNscore().then(rezultat => console.log(rezultat));
+  UcitajSS().then(rezultat => console.log(rezultat))
 }
 
-napraviLineChart();
+napraviLineChart()
 

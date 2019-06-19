@@ -20,6 +20,15 @@ var random = function random() {
 };
 
 var finRez = null;
+var state = {
+  nscore: null,
+  escore: null,
+  oscore: null,
+  ascore: null,
+  csore: null,
+  impulsiveness: null,
+  ss: null
+};
 
 var papa2 = function papa2(textString) {
   var data = Papa.parse(textString, {
@@ -31,7 +40,84 @@ var papa2 = function papa2(textString) {
 
 function Inicijaliziraj() {
   return new Promise(function (resolve) {
-    fetch('../../../Book1.csv').then(function (response) {
+    fetch('../../../DataSet.csv').then(function (response) {
+      return response.text();
+    }).then(function (text) {
+      var pom = papa2(text);
+      resolve(pom);
+    });
+  });
+}
+
+function UcitajNscore() {
+  return new Promise(function (resolve) {
+    fetch('../../../nscore.csv').then(function (response) {
+      return response.text();
+    }).then(function (text) {
+      var pom = papa2(text);
+      resolve(pom);
+    });
+  });
+}
+
+function UcitajEscore() {
+  return new Promise(function (resolve) {
+    fetch('../../../escore.csv').then(function (response) {
+      return response.text();
+    }).then(function (text) {
+      var pom = papa2(text);
+      resolve(pom);
+    });
+  });
+}
+
+function UcitajOscore() {
+  return new Promise(function (resolve) {
+    fetch('../../../oscore.csv').then(function (response) {
+      return response.text();
+    }).then(function (text) {
+      var pom = papa2(text);
+      resolve(pom);
+    });
+  });
+}
+
+function UcitajAscore() {
+  return new Promise(function (resolve) {
+    fetch('../../../ascore.csv').then(function (response) {
+      return response.text();
+    }).then(function (text) {
+      var pom = papa2(text);
+      resolve(pom);
+    });
+  });
+}
+
+function UcitajCscore() {
+  return new Promise(function (resolve) {
+    fetch('../../../cscore.csv').then(function (response) {
+      return response.text();
+    }).then(function (text) {
+      var pom = papa2(text);
+      resolve(pom);
+    });
+  });
+}
+
+function UcitajImpulsiveness() {
+  return new Promise(function (resolve) {
+    fetch('../../../impulsiveness.csv').then(function (response) {
+      return response.text();
+    }).then(function (text) {
+      var pom = papa2(text);
+      resolve(pom);
+    });
+  });
+}
+
+function UcitajSS() {
+  return new Promise(function (resolve) {
+    fetch('../../../ss.csv').then(function (response) {
       return response.text();
     }).then(function (text) {
       var pom = papa2(text);
@@ -92,6 +178,15 @@ function drugLabele() {
 function edukacijaLabele() {
   return ["Left school before 16 years", "Left school at 16 years", "Left school at 17 years", "Left school at 18 years", "Some college or university, no certificate or degree", "Professional certificate/ diploma", "University degree", "Masters degree", "Doctorate degree"];
 }
+
+0;
+/*function edukacijaLabele(){
+  return [
+      {nscore: 12,cases:1, value:  -3.46436}
+
+  ]
+
+}*/
 
 function CountGodine(podaci, godine) {
   var novi = ObradiGodine(podaci, godine); //console.log(novi.length);
@@ -274,6 +369,9 @@ function gumb1() {
   var x = document.getElementsByTagName("input");
   x.forEach(function (element) {
     console.log(element.name, element.checked);
+  });
+  UcitajSS().then(function (rezultat) {
+    return console.log(rezultat);
   });
 }
 
