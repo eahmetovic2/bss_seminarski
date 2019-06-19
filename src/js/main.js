@@ -30,7 +30,7 @@ Chart.defaults.global.tooltips.callbacks.labelColor = function (tooltipItem, cha
 var cardChart1 = new Chart($('#card-chart1'), {
   type: 'line',
   data: {
-    labels: ['Januaryaa', 'February', 'March', 'April', 'May', 'June', 'July'],
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
     datasets: [{
       label: 'My First dataset',
       backgroundColor: getStyle('--primary'),
@@ -79,7 +79,7 @@ var cardChart1 = new Chart($('#card-chart1'), {
 var cardChart2 = new Chart($('#card-chart2'), {
   type: 'line',
   data: {
-    labels: ['Januarya', 'February', 'March', 'April', 'May', 'June', 'July'],
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
     datasets: [{
       label: 'My First dataset',
       backgroundColor: getStyle('--info'),

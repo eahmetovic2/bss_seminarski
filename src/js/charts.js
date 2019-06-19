@@ -21,7 +21,7 @@ var random = function random() {
 var lineChart = new Chart($('#canvas-1'), {
   type: 'line',
   data: {
-    labels: ['Januarya', 'February', 'March', 'April', 'May', 'June', 'July'],
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
     datasets: [{
       label: 'My First dataset',
       backgroundColor: 'rgba(220, 220, 220, 0.2)',
