@@ -23,7 +23,16 @@ const papa2 = (textString) => {
     return data.data;
 }
 
-
+function Inicijaliziraj() {
+return new Promise(resolve => {
+  fetch('../../../Book1.csv')
+  .then(response => response.text())
+  .then(text => {
+    let pom=papa2(text);
+    resolve(pom)
+  })
+});
+}
 
 function uslovGodine(human) {
   if(this=="18-24")
@@ -40,7 +49,35 @@ function uslovGodine(human) {
     return human.Age==2.59171;
 }
 
-function uslovHeroin(human) {
+function uslovSpol(human) {
+  if(this=="Female")
+    return human.Age==0.48246 ;
+  else if(this=="Male")
+    return human.Age==-0.48246;
+}
+
+function uslovEdukacija(human) {
+  if(this=="Left school before 16 years")
+    return human.Age==-2.43591;
+  else if(this=="Left school at 16 years")
+    return human.Age==-1.73790;
+  else if(this=="Left school at 17 years")
+    return human.Age==-1.43719;
+  else if(this=="Left school at 18 years")
+    return human.Age==-1.22751;
+  else if(this=="Some college or university, no certificate or degree")
+    return human.Age==-0.61113;
+  else if(this=="Professional certificate/ diploma")
+    return human.Age==-0.05921;
+  else if(this=="University degree")
+    return human.Age==0.45468;
+  else if(this=="Masters degree")
+    return human.Age==1.16365;
+  else if(this=="Doctorate degree")
+    return human.Age==1.98437;
+}
+
+function uslovDroga(human) {
   if(this.ucestalost=="Never Used")
     return human[this.droga]==0;
   else if(this.ucestalost=="Used over a Decade Ago")
@@ -59,24 +96,27 @@ function uslovHeroin(human) {
 
 function ObradiDrogu(podaci,ucestalost,droga) {
   if(podaci) {
-    let novi = podaci.filter(uslovHeroin,{ucestalost,droga});
+    let novi = podaci.filter(uslovDroga,{ucestalost,droga});
   return novi;
   }
 }
 
-
-
-function Inicijaliziraj() {
-return new Promise(resolve => {
-  fetch('../../../Book1.csv')
-  .then(response => response.text())
-  .then(text => {
-    let pom=papa2(text);
-    resolve(pom)
-  })
-});
-  
+function ObradiEdukaciju(podaci,stepenE) {
+  if(podaci) {
+    let novi = podaci.filter(uslovEdukacija,stepenE);
+  return novi;
+  }
 }
+
+function ObradiGodine(podaci,godine) {
+  if(podaci) {
+    let novi = podaci.filter(uslovGodine,godine);
+    //console.log(novi);
+    return novi;
+  }
+}
+
+
 
 
 function godLabele(){
@@ -88,15 +128,14 @@ function drugLabele(){
   "Used in Last Year","Used in Last Month","Used in Last Week","Used in Last Day"]
 }
 
-
-
-function ObradiGodine(podaci,godine) {
-  if(podaci) {
-    let novi = podaci.filter(uslovGodine,godine);
-    //console.log(novi);
-    return novi;
-  }
+function edukacijaLabele(){
+  return  [ "Left school before 16 years","Left school at 16 years",
+  "Left school at 17 years","Left school at 18 years",
+  "Some college or university, no certificate or degree",
+  "Professional certificate/ diploma","University degree","Masters degree","Doctorate degree"]
 }
+
+
 
 function CountGodine(podaci,godine) {
   var novi = ObradiGodine(podaci,godine);
@@ -285,6 +324,14 @@ function napraviPolarChart() {
     })
 
   })
+}
+
+function gumb1() {
+  var values = [];
+  var x = document.getElementsByTagName("input");
+  x.forEach(element => {
+    console.log(element.name,element.checked);
+  });
 }
 
 napraviLineChart();
