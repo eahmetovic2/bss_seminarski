@@ -1,9 +1,5 @@
 "use strict";
 
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 /* eslint-disable object-curly-newline */
 
 /* global Chart */
@@ -25,15 +21,16 @@ var random = function random() {
 
 var finRez = null;
 var state = {
-  nscore: null,
-  escore: null,
-  oscore: null,
-  ascore: null,
-  csore: null,
-  impulsiveness: null,
-  ss: null,
-  drug: "Alcohol",
-  label: "Age"
+  podaci: [],
+  nscore: [],
+  escore: [],
+  oscore: [],
+  ascore: [],
+  cscore: [],
+  drug: "NONE",
+  ucestalost: null,
+  label: "Age",
+  labels: []
 };
 
 var papa2 = function papa2(textString) {
@@ -42,11 +39,23 @@ var papa2 = function papa2(textString) {
   });
   finRez = data.data;
   return data.data;
-};
+}; //------------------------------ U C I T A V A NJ A ----------------------------------
+
 
 function Inicijaliziraj() {
   return new Promise(function (resolve) {
     fetch('../../../DataSet.csv').then(function (response) {
+      return response.text();
+    }).then(function (text) {
+      var pom = papa2(text);
+      resolve(pom);
+    });
+  });
+}
+
+function UcitajAscore() {
+  return new Promise(function (resolve) {
+    fetch('../../../ascore.csv').then(function (response) {
       return response.text();
     }).then(function (text) {
       var pom = papa2(text);
@@ -88,17 +97,6 @@ function UcitajOscore() {
   });
 }
 
-function UcitajAscore() {
-  return new Promise(function (resolve) {
-    fetch('../../../ascore.csv').then(function (response) {
-      return response.text();
-    }).then(function (text) {
-      var pom = papa2(text);
-      resolve(pom);
-    });
-  });
-}
-
 function UcitajCscore() {
   return new Promise(function (resolve) {
     fetch('../../../cscore.csv').then(function (response) {
@@ -110,27 +108,38 @@ function UcitajCscore() {
   });
 }
 
-function UcitajImpulsiveness() {
-  return new Promise(function (resolve) {
-    fetch('../../../impulsiveness.csv').then(function (response) {
-      return response.text();
-    }).then(function (text) {
-      var pom = papa2(text);
-      resolve(pom);
+function UcitavanjeSvega() {
+  Inicijaliziraj().then(function (results) {
+    state.podaci = results;
+    state.podaci.length--;
+    UcitajAscore().then(function (resulta) {
+      state.ascore = resulta;
+      state.ascore.length--;
+      UcitajNscore().then(function (resultn) {
+        state.nscore = resultn;
+        state.nscore.length--;
+        UcitajEscore().then(function (resulte) {
+          state.escore = resulte;
+          state.escore.length--;
+          UcitajOscore().then(function (resulto) {
+            state.oscore = resulto;
+            state.oscore.length--;
+            UcitajCscore().then(function (resultc) {
+              state.cscore = resultc;
+              state.cscore.length--;
+              var x = document.getElementById("Ucitavanje");
+              x.innerHTML = "Podaci su ucitani, mozete pristupiti aplikaciji!"; //napraviLineChart(,);
+
+              console.log("STATE", state);
+            });
+          });
+        });
+      });
     });
   });
 }
 
-function UcitajSS() {
-  return new Promise(function (resolve) {
-    fetch('../../../ss.csv').then(function (response) {
-      return response.text();
-    }).then(function (text) {
-      var pom = papa2(text);
-      resolve(pom);
-    });
-  });
-}
+UcitavanjeSvega(); //------------------------------ U S L O V I ----------------------------------
 
 function uslovGodine(human) {
   if (this == "18-24") return human.Age == -0.95197;else if (this == "25-34") return human.Age == -0.07854;else if (this == "35-44") return human.Age == 0.49788;else if (this == "45-54") return human.Age == 1.09449;else if (this == "55-64") return human.Age == 1.82213;else if (this == "65+") return human.Age == 2.59171;
@@ -156,34 +165,31 @@ function uslovScore(human) {
   var _this = this;
 
   var vrijednost = this.pom.find(function (element) {
-    return element.Nscore == _this.intenzitetScore;
+    return element[_this.vrstaScore] == _this.intenzitetScore;
   }).Value;
-  return human.Nscore == vrijednost;
-}
+  return human[this.vrstaScore] == vrijednost;
+} //------------------------------ O B R A D E ----------------------------------
+
 
 function ObradiScore(podaci, vrstaScore, intenzitetScore) {
-  return new Promise(function (resolve) {
-    if (podaci) {
-      fetch('../../../' + vrstaScore + '.csv').then(function (response) {
-        return response.text();
-      }).then(function (text) {
-        var pom = papa2(text);
-        console.log(pom);
-        console.log("VRSTA I INT", vrstaScore, intenzitetScore);
-        var novi = podaci.filter(uslovScore, {
-          vrstaScore: vrstaScore,
-          intenzitetScore: intenzitetScore,
-          pom: pom
-        });
-        console.log("NOVI", novi);
-        resolve(novi);
-      });
-    }
-  });
+  if (podaci) {
+    var pom = state[vrstaScore.toLowerCase()]; //console.log("POMOCNA",pom);
+    //console.log("VRSTA I INT",vrstaScore,intenzitetScore);
+    //console.log("PODACIIIII",podaci);
+
+    var novi = podaci.filter(uslovScore, {
+      vrstaScore: vrstaScore,
+      intenzitetScore: intenzitetScore,
+      pom: pom
+    }); //console.log("NOVI",novi);
+
+    return novi;
+  }
 }
 
 function ObradiDrogu(podaci, ucestalost, droga) {
   if (podaci) {
+    //console.log(ucestalost,droga);
     var novi = podaci.filter(uslovDroga, {
       ucestalost: ucestalost,
       droga: droga
@@ -192,7 +198,7 @@ function ObradiDrogu(podaci, ucestalost, droga) {
   }
 }
 
-function ObradiSpol(podaci, spol) {
+function ObradiGender(podaci, spol) {
   if (podaci) {
     var novi = podaci.filter(uslovSpol, spol);
     return novi;
@@ -219,10 +225,15 @@ function ObradiGodine(podaci, godine) {
 
     return novi;
   }
-}
+} //------------------------------ L A B E L E ----------------------------------
+
 
 function godLabele() {
   return ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"];
+}
+
+function genderLabele() {
+  return ["Female", "Male"];
 }
 
 function drugLabele() {
@@ -233,9 +244,25 @@ function edukacijaLabele() {
   return ["Left school before 16 years", "Left school at 16 years", "Left school at 17 years", "Left school at 18 years", "Some college or university, no certificate or degree", "Professional certificate/ diploma", "University degree", "Masters degree", "Doctorate degree"];
 }
 
-function CountGodine(podaci, godine) {
-  var novi = ObradiGodine(podaci, godine); //console.log(novi.length);
+function etnicityLabele() {
+  return ["Asian", "Black", "Mixed-Black/Asian", "Mixed-White/Asian", "Mixed-White/Black", "White", "Other"];
+}
 
+function scoreLabele(scoreType) {
+  var povratni = state[scoreType.toLowerCase()].map(function (element) {
+    return element[scoreType];
+  });
+  return povratni;
+} //------------------------------- C O U N T O V I -------------------------------
+
+
+function CountGodine(podaci, godine) {
+  var novi = ObradiGodine(podaci, godine);
+  return novi.length;
+}
+
+function CountGender(podaci, gender) {
+  var novi = ObradiGender(podaci, gender);
   return novi.length;
 }
 
@@ -243,100 +270,74 @@ function CountDrogu(podaci, ucestalost, droga) {
   return ObradiDrogu(podaci, ucestalost, droga).length;
 }
 
-function CountSpol(podaci, spol) {
-  return ObradiSpol(podaci, spol).length;
+function CountEducation(podaci, education) {
+  return ObradiSpol(podaci, education).length;
 }
 
-function SveGod(podaci) {
-  var novi = godLabele();
-  var n2 = novi.map(function (element) {
-    return CountGodine(podaci, element);
-  }); //console.log(n2);
-
-  return n2;
+function CountEthnicity(podaci, etnicity) {
+  return ObradiEtnicitet(podaci, etnicity).length;
 }
 
-function napraviLineChart() {
-  Inicijaliziraj().then(function (result) {
-    var canvas1 = document.getElementById("canvas-1");
-    var canvas2 = document.getElementById("canvas-2");
-    var canvas3 = document.getElementById("canvas-3");
-    canvas1.style.display = "block";
-    canvas2.style.display = "none";
-    canvas3.style.display = "none";
-    var lineChart = new Chart($('#canvas-1'), {
-      type: 'line',
-      data: {
-        labels: godLabele(),
-        //labels : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [{
-          label: 'My First dataset',
-          backgroundColor: 'rgba(220, 220, 220, 0.2)',
-          borderColor: 'rgba(220, 220, 220, 1)',
-          pointBackgroundColor: 'rgba(220, 220, 220, 1)',
-          pointBorderColor: '#fff',
-          data: SveGod(result)
-        }]
-      },
-      options: {
-        responsive: true
-      }
-    });
+function CountScore(podaci, scoreType, scoreI) {
+  return ObradiScore(podaci, scoreType, scoreI).length;
+} //-----------------------------------  C H A R T O V I ---------------------------------------
+
+
+function napraviLineChart(dataf, labesf) {
+  var canvas1 = document.getElementById("canvas-1");
+  var canvas2 = document.getElementById("canvas-2");
+  var canvas3 = document.getElementById("canvas-3");
+  canvas1.style.display = "block";
+  canvas2.style.display = "none";
+  canvas3.style.display = "none";
+  var lineChart = new Chart($('#canvas-1'), {
+    type: 'line',
+    data: {
+      labels: labesf,
+      //labels : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      datasets: [{
+        label: 'My First dataset',
+        backgroundColor: 'rgba(220, 220, 220, 0.2)',
+        borderColor: 'rgba(220, 220, 220, 1)',
+        pointBackgroundColor: 'rgba(220, 220, 220, 1)',
+        pointBorderColor: '#fff',
+        data: dataf
+      }]
+    },
+    options: {
+      responsive: true
+    }
   });
 }
 
-function napraviBarChart() {
-  Inicijaliziraj().then(function (result) {
-    var godineL = godLabele();
-    var data = [];
-    godineL.forEach(function (element) {
-      var poedGod = ObradiGodine(result, element);
-      var godDroga = ObradiDrogu(poedGod, "Used in Last Day", "Heroin");
-      data.push(godDroga.length);
-    });
-    console.log(data);
-    console.log(godineL);
-    var canvas1 = document.getElementById("canvas-1");
-    var canvas2 = document.getElementById("canvas-2");
-    var canvas3 = document.getElementById("canvas-3");
-    canvas1.style.display = "none";
-    canvas2.style.display = "block";
-    canvas3.style.display = "none";
-    var barChart = new Chart($('#canvas-2'), {
-      type: 'bar',
-      data: {
-        labels: godineL,
-        datasets: [{
-          backgroundColor: 'rgba(220, 220, 220, 0.5)',
-          borderColor: 'rgba(220, 220, 220, 0.8)',
-          highlightFill: 'rgba(220, 220, 220, 0.75)',
-          highlightStroke: 'rgba(220, 220, 220, 1)',
-          data: data
-        }, {
-          backgroundColor: 'rgba(151, 187, 205, 0.5)',
-          borderColor: 'rgba(151, 187, 205, 0.8)',
-          highlightFill: 'rgba(151, 187, 205, 0.75)',
-          highlightStroke: 'rgba(151, 187, 205, 1)',
-          data: data
-        }]
-      },
-      options: {
-        responsive: true
-      }
-    });
+function napraviBarChart(dataf, labelsf) {
+  var canvas1 = document.getElementById("canvas-1");
+  var canvas2 = document.getElementById("canvas-2");
+  var canvas3 = document.getElementById("canvas-3");
+  canvas1.style.display = "none";
+  canvas2.style.display = "block";
+  canvas3.style.display = "none";
+  var barChart = new Chart($('#canvas-2'), {
+    type: 'bar',
+    data: {
+      labels: labelsf,
+      datasets: [{
+        backgroundColor: 'rgba(220, 220, 220, 0.5)',
+        borderColor: 'rgba(220, 220, 220, 0.8)',
+        highlightFill: 'rgba(220, 220, 220, 0.75)',
+        highlightStroke: 'rgba(220, 220, 220, 1)',
+        data: dataf
+      }]
+    },
+    options: {
+      responsive: true
+    }
   });
 }
 
-function napraviDoughnutChart() {
+function napraviDoughnutChart(dataf, labelsf) {
   Inicijaliziraj().then(function (result) {
-    var godineL = godLabele();
-    var data2 = [];
-    godineL.forEach(function (element) {
-      var poedGod = ObradiGodine(result, element);
-      var godDroga = ObradiDrogu(poedGod, "Used in Last Day", "Heroin");
-      data2.push(godDroga.length);
-    }); // eslint-disable-next-line no-unused-vars
-
+    // eslint-disable-next-line no-unused-vars
     var canvas1 = document.getElementById("canvas-1");
     var canvas2 = document.getElementById("canvas-2");
     var canvas3 = document.getElementById("canvas-3");
@@ -346,9 +347,9 @@ function napraviDoughnutChart() {
     var doughnutChart = new Chart($('#canvas-3'), {
       type: 'doughnut',
       data: {
-        labels: godineL,
+        labels: labelsf,
         datasets: [{
-          data: data2,
+          data: dataf,
           backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
           hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
         }]
@@ -429,6 +430,88 @@ function napraviPolarChart() {
       }
     });
   });
+} //-----------------------------  o b r a d a    p o d a t a k a ---------------------------------
+
+
+function finalizirajPodatke(podaciF) {
+  var vrati = {
+    data: [],
+    label: []
+  }; //console.log("PODACIFFF",podaciF);
+
+  var podaci = state.podaci; //let podaci = await Inicijaliziraj();//
+  //console.log("PODACI",podaci)
+
+  if (podaciF.ages != null && podaciF.ages.length > 0) {
+    podaciF.ages.forEach(function (element) {
+      vrati.data = vrati.data.concat(ObradiGodine(podaci, element));
+    });
+    podaci = vrati.data;
+  }
+
+  if (podaciF.genders != null && podaciF.genders.length > 0) {
+    vrati.data = [];
+    podaciF.genders.forEach(function (element) {
+      vrati.data = vrati.data.concat(ObradiGender(podaci, element));
+    });
+    podaci = vrati.data;
+  }
+
+  if (podaciF.educations != null && podaciF.educations.length > 0) {
+    vrati.data = [];
+    podaciF.educations.forEach(function (element) {
+      vrati.data = vrati.data.concat(ObradiEdukaciju(podaci, element));
+    });
+    podaci = vrati.data;
+  }
+
+  if (podaciF.ethnicitys != null && podaciF.ethnicitys.length > 0) {
+    vrati.data = [];
+    podaciF.ethnicitys.forEach(function (element) {
+      vrati.data = vrati.data.concat(ObradiEtnicitet(podaci, element));
+    });
+    podaci = vrati.data;
+  }
+
+  if (podaciF.nscore != null && podaciF.nscore != "") {
+    vrati.data = [];
+    vrati.data = ObradiScore(podaci, "Nscore", podaciF.nscore);
+    podaci = vrati.data;
+  }
+
+  if (podaciF.escore != null && podaciF.escore != "") {
+    vrati.data = [];
+    vrati.data = ObradiScore(podaci, "Escore", podaciF.escore);
+    podaci = vrati.data;
+  }
+
+  if (podaciF.cscore != null && podaciF.cscore != "") {
+    vrati.data = [];
+    vrati.data = ObradiScore(podaci, "Cscore", podaciF.cscore);
+    podaci = vrati.data;
+  }
+
+  if (podaciF.oscore != null && podaciF.oscore != "") {
+    vrati.data = [];
+    vrati.data = ObradiScore(podaci, "Oscore", podaciF.oscore);
+    podaci = vrati.data;
+  }
+
+  if (podaciF.ascore != null && podaciF.ascore != "") {
+    vrati.data = [];
+    vrati.data = ObradiScore(podaci, "Ascore", podaciF.ascore);
+    podaci = vrati.data;
+  }
+
+  if (podaciF.drug !== "NONE") {
+    //console.log("FINAL222",podaci);
+    vrati.data = [];
+    vrati.data = ObradiDrogu(podaci, podaciF.ucestalost, podaciF.drug);
+    podaci = vrati.data;
+  } //console.log("FINAL",vrati);
+
+
+  return podaci;
 }
 
 function dobaviSPocetne() {
@@ -438,22 +521,19 @@ function dobaviSPocetne() {
     return element.checked;
   }).map(function (el) {
     return el.value;
-  }); //console.log(element.name, element.checked, element.value)
-
+  });
   var ages = Array.prototype.slice.call(document.getElementsByName("godine"));
   var ageVal = ages.filter(function (element) {
     return element.checked;
   }).map(function (el) {
     return el.value;
-  }); //console.log(element.name, element.checked, element.value)
-
+  });
   var educations = Array.prototype.slice.call(document.getElementsByName("education"));
   var educationVal = educations.filter(function (element) {
     return element.checked;
   }).map(function (el) {
     return el.value;
-  }); //console.log(element.name, element.checked, element.value)
-
+  });
   var ethnicitys = Array.prototype.slice.call(document.getElementsByName("ethnicity"));
   var ethnicityVal = ethnicitys.filter(function (element) {
     return element.checked;
@@ -461,6 +541,12 @@ function dobaviSPocetne() {
     return el.value;
   }); //console.log(element.name, element.checked, element.value)
 
+  var ucestalosti = Array.prototype.slice.call(document.getElementsByName("ucestalost"));
+  var ucestalostVal = ucestalosti.filter(function (element) {
+    return element.checked;
+  }).map(function (el) {
+    return el.value;
+  });
   var nscore = document.getElementById("nscore").value;
   var escore = document.getElementById("escore").value;
   var oscore = document.getElementById("oscore").value;
@@ -476,136 +562,67 @@ function dobaviSPocetne() {
   povratni.escore = escore;
   povratni.oscore = oscore;
   povratni.ascore = ascore;
-  povratni.cscore = cscore; //povratni.impulsiveness = impulsiveness;
+  povratni.cscore = cscore;
+  povratni.ucestalost = ucestalostVal[0]; //povratni.impulsiveness = impulsiveness;
   //povratni.ss = ss;
 
   povratni.drug = state.drug;
   povratni.label = state.label;
-  finalizirajPodatke(povratni);
   return povratni; //UcitajSS().then(rezultat => console.log(rezultat))
-}
-
-function finalizirajPodatke(_x) {
-  return _finalizirajPodatke.apply(this, arguments);
-}
-
-function _finalizirajPodatke() {
-  _finalizirajPodatke = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee(podaciF) {
-    var vrati, podaci;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            vrati = {
-              data: [],
-              label: []
-            };
-            console.log("PODACIFFF", podaciF);
-            _context.next = 4;
-            return Inicijaliziraj();
-
-          case 4:
-            podaci = _context.sent;
-            //Inicijaliziraj().then(podaci=> {
-            console.log("PODACI", podaci);
-
-            if (podaciF.ages != null && podaciF.ages.length > 0) {
-              podaciF.ages.forEach(function (element) {
-                vrati.data = vrati.data.concat(ObradiGodine(podaci, element));
-              });
-              podaci = vrati.data;
-            }
-
-            if (podaciF.genders != null && podaciF.genders.length > 0) {
-              vrati.data = [];
-              podaciF.genders.forEach(function (element) {
-                vrati.data = vrati.data.concat(ObradiSpol(podaci, element));
-              });
-              podaci = vrati.data;
-            }
-
-            if (podaciF.educations != null && podaciF.educations.length > 0) {
-              vrati.data = [];
-              podaciF.educations.forEach(function (element) {
-                vrati.data = vrati.data.concat(ObradiEdukaciju(podaci, element));
-              });
-              podaci = vrati.data;
-            }
-
-            if (podaciF.ethnicitys != null && podaciF.ethnicitys.length > 0) {
-              vrati.data = [];
-              podaciF.ethnicitys.forEach(function (element) {
-                vrati.data = vrati.data.concat(ObradiEtnicitet(podaci, element));
-              });
-              podaci = vrati.data;
-            }
-
-            if (!(podaciF.nscore != null && podaciF.nscore != "")) {
-              _context.next = 14;
-              break;
-            }
-
-            vrati.data = [];
-            _context.next = 14;
-            return ObradiScore(podaci, "nscore", podaciF.nscore).then(function (results) {
-              vrati.data = results;
-              podaci = vrati.data;
-            });
-
-          case 14:
-            if (!(podaciF.escore != null && podaciF.escore != "")) {
-              _context.next = 18;
-              break;
-            }
-
-            vrati.data = [];
-            _context.next = 18;
-            return ObradiScore(podaci, "escore", podaciF.escore).then(function (results) {
-              vrati.data = results;
-              podaci = vrati.data;
-            });
-
-          case 18:
-            if (!(podaciF.ascore != null && podaciF.ascore != "")) {
-              _context.next = 22;
-              break;
-            }
-
-            vrati.data = [];
-            _context.next = 22;
-            return ObradiScore(podaci, "ascore", podaciF.ascore).then(function (results) {
-              vrati.data = results;
-              podaci = vrati.data;
-            });
-
-          case 22:
-            console.log(vrati); //})
-
-          case 23:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee);
-  }));
-  return _finalizirajPodatke.apply(this, arguments);
 }
 
 function selectDrug(droga2) {
   var x = document.getElementById("drogaDropdown");
   x.innerHTML = droga2;
   state.drug = droga2;
-  console.log("DROGA", droga2);
+  if (droga2 != "NONE") document.getElementById("firstOne").checked = true;
+  ; //let genderVal = genders.filter(element => {return element.checked; }).map(el => {return el.value;});
 }
 
 function selectLabel(labela) {
   var x = document.getElementById("labelDropdown");
   x.innerHTML = labela;
-  state.label = labela;
-  console.log("Labela", labela);
+  state.label = labela; //console.log(labela);
+
+  if (labela == "Age") {
+    state.labels = godLabele();
+  } else if (labela == "Gender") {
+    state.labels = genderLabele();
+  } else if (labela == "Education") {
+    state.labels = edukacijaLabele();
+  } else if (labela == "Ethnicity") {
+    state.labels = etnicityLabele();
+  } else if (labela == "Drug") {
+    state.labels = drugLabele();
+  } else {
+    state.labels = scoreLabele(labela);
+  }
 }
 
-napraviLineChart();
+function napraviGrafF() {
+  var pocetna = dobaviSPocetne();
+  var data = finalizirajPodatke(pocetna);
+  console.log("POCETNa", pocetna);
+  console.log("DATA", data);
+  var finDat = [];
+
+  if (state.label == "Age") {
+    finDat = state.labels.map(function (element) {
+      return CountGodine(data, element);
+    });
+  } else if (state.label == "Gender") finDat = state.labels.map(function (element) {
+    return CountGender(data, element);
+  });else if (state.label == "Ethnicity") finDat = state.labels.map(function (element) {
+    return CountEthnicity(data, element);
+  });else if (state.label == "Education") finDat = state.labels.map(function (element) {
+    return CountEducation(data, element);
+  });else if (state.label == "Drug") finDat = state.labels.map(function (element) {
+    return CountDrogu(data, element, pocetna.drug);
+  });else finDat = state.labels.map(function (element) {
+    return CountScore(data, state.label, element);
+  });
+
+  console.log("FINDATA", finDat);
+  if (state.label == "Age" || state.label == "Education") napraviLineChart(finDat, state.labels);else if (state.label == "Gender" || state.label == "Ethnicity") napraviDoughnutChart(finDat, state.labels);else napraviBarChart(finDat, state.labels);
+}
 //# sourceMappingURL=dashboard.js.map

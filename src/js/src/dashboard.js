@@ -3,6 +3,7 @@
 import  * as Papa from 'papaparse' 
 //import  Reader from 'fstream' 
 import $ from 'jquery'
+import 'babel-polyfill'
  //
 /**
  * --------------------------------------------------------------------------
@@ -18,15 +19,16 @@ const random = () => Math.round(Math.random() * 100)
 let finRez=null;
 
 let state= {
-  nscore:null,
-  escore:null,
-  oscore:null,
-  ascore:null,
-  csore:null,
-  impulsiveness:null,
-  ss:null,
-  drug:"Alcohol",
-  label:"Age"
+  podaci:[],
+  nscore:[],
+  escore:[],
+  oscore:[],
+  ascore:[],
+  cscore:[],
+  drug:"NONE",
+  ucestalost: null,
+  label:"Age",
+  labels:[]
 }
 
 const papa2 = (textString) => {
@@ -35,9 +37,23 @@ const papa2 = (textString) => {
     return data.data;
 }
 
+//------------------------------ U C I T A V A NJ A ----------------------------------
+
 function Inicijaliziraj() {
-  return new Promise(resolve => {
+  return  new Promise(resolve => {
     fetch('../../../DataSet.csv')
+    .then(response => response.text())
+    .then(text => {
+      let pom=papa2(text);
+
+      resolve(pom)
+    })
+  });
+}
+
+function UcitajAscore() {
+  return new Promise(resolve => {
+    fetch('../../../ascore.csv')
     .then(response => response.text())
     .then(text => {
       let pom=papa2(text);
@@ -79,17 +95,6 @@ function UcitajOscore() {
   });
 }
 
-function UcitajAscore() {
-  return new Promise(resolve => {
-    fetch('../../../ascore.csv')
-    .then(response => response.text())
-    .then(text => {
-      let pom=papa2(text);
-      resolve(pom)
-    })
-  });
-}
-
 function UcitajCscore() {
   return new Promise(resolve => {
     fetch('../../../cscore.csv')
@@ -101,28 +106,43 @@ function UcitajCscore() {
   });
 }
 
-function UcitajImpulsiveness() {
-  return new Promise(resolve => {
-    fetch('../../../impulsiveness.csv')
-    .then(response => response.text())
-    .then(text => {
-      let pom=papa2(text);
-      resolve(pom)
+function UcitavanjeSvega() {
+  Inicijaliziraj().then(results =>{ 
+    state.podaci=results;
+    state.podaci.length--;
+    UcitajAscore().then(resulta => {
+      state.ascore=resulta;
+      state.ascore.length--;
+      UcitajNscore().then(resultn => {
+        state.nscore=resultn;
+        state.nscore.length--;
+        UcitajEscore().then(resulte => {
+          state.escore=resulte;
+          state.escore.length--;
+          UcitajOscore().then(resulto => {
+            state.oscore=resulto;
+            state.oscore.length--;
+            UcitajCscore().then(resultc => {
+              state.cscore=resultc;
+              state.cscore.length--;
+              var x = document.getElementById("Ucitavanje");
+              x.innerHTML = "Podaci su ucitani, mozete pristupiti aplikaciji!";
+
+              //napraviLineChart(,);
+              console.log("STATE",state);
+            })
+          })
+        })
+      })
     })
-  });
+  })
 }
 
-function UcitajSS() {
-  return new Promise(resolve => {
-    fetch('../../../ss.csv')
-    .then(response => response.text())
-    .then(text => {
-      let pom=papa2(text);
-      resolve(pom)
-    })
-  });
-}
+UcitavanjeSvega();
 
+
+
+//------------------------------ U S L O V I ----------------------------------
 
 function uslovGodine(human) {
   if(this=="18-24")
@@ -203,38 +223,35 @@ function uslovDroga(human) {
 }
 
 function uslovScore(human) {
-  var vrijednost = this.pom.find(element => {return element.Nscore==this.intenzitetScore}).Value;
-  return human.Nscore == vrijednost;
+  var vrijednost = this.pom.find(element => {return element[this.vrstaScore]==this.intenzitetScore}).Value;
+  return human[this.vrstaScore] == vrijednost;
 }
 
+//------------------------------ O B R A D E ----------------------------------
 
 
 function ObradiScore(podaci,vrstaScore,intenzitetScore) {
-  return new Promise(resolve => {
   if(podaci) {
-    fetch('../../../'+vrstaScore+'.csv')
-    .then(response => response.text())
-    .then(text => {
-      let pom=papa2(text);
-      console.log(pom);
-      console.log("VRSTA I INT",vrstaScore,intenzitetScore);
+      let pom = state[vrstaScore.toLowerCase()];
+      //console.log("POMOCNA",pom);
+      //console.log("VRSTA I INT",vrstaScore,intenzitetScore);
+      //console.log("PODACIIIII",podaci);
       let novi = podaci.filter(uslovScore,{vrstaScore,intenzitetScore,pom});
-      console.log("NOVI",novi);
-      resolve(novi);
-    })
+      //console.log("NOVI",novi);
+      return novi;
   }
-  });
 
 }
 
 function ObradiDrogu(podaci,ucestalost,droga) {
   if(podaci) {
+    //console.log(ucestalost,droga);
     let novi = podaci.filter(uslovDroga,{ucestalost,droga});
   return novi;
   }
 }
 
-function ObradiSpol(podaci,spol) {
+function ObradiGender(podaci,spol) {
   if(podaci) {
     let novi = podaci.filter(uslovSpol,spol);
   return novi;
@@ -264,12 +281,16 @@ function ObradiGodine(podaci,godine) {
 }
 
 
-
+//------------------------------ L A B E L E ----------------------------------
 
 
 
 function godLabele(){
   return  ["18-24","25-34","35-44","45-54","55-64","65+"]
+}
+
+function genderLabele(){
+  return  ["Female","Male"]
 }
 
 function drugLabele(){
@@ -284,11 +305,26 @@ function edukacijaLabele(){
   "Professional certificate/ diploma","University degree","Masters degree","Doctorate degree"]
 }
 
+function etnicityLabele(){
+  return  [ "Asian","Black","Mixed-Black/Asian","Mixed-White/Asian", "Mixed-White/Black", "White","Other"]
+}
+
+function scoreLabele(scoreType){
+  let povratni = state[scoreType.toLowerCase()].map(element => {return element[scoreType];});
+  return  povratni;
+}
+
+//------------------------------- C O U N T O V I -------------------------------
+
 
 
 function CountGodine(podaci,godine) {
   var novi = ObradiGodine(podaci,godine);
-  //console.log(novi.length);
+  return novi.length;
+}
+
+function CountGender(podaci,gender) {
+  var novi = ObradiGender(podaci,gender);
   return novi.length;
 }
 
@@ -296,31 +332,34 @@ function CountDrogu(podaci,ucestalost,droga) {
   return ObradiDrogu(podaci,ucestalost,droga).length;
 }
 
-function CountSpol(podaci,spol) {
-  return ObradiSpol(podaci,spol).length;
+
+function CountEducation(podaci,education) {
+  return ObradiSpol(podaci,education).length;
+}
+
+function CountEthnicity (podaci,etnicity) {
+  return ObradiEtnicitet(podaci,etnicity).length;
+}
+
+function CountScore (podaci,scoreType, scoreI) {
+  return ObradiScore(podaci,scoreType,scoreI).length;
 }
 
 
-function SveGod(podaci) {
-  var novi=godLabele();
-  let n2=novi.map(element => {return CountGodine(podaci,element)});
-  //console.log(n2);
-  return n2;
-}
+//-----------------------------------  C H A R T O V I ---------------------------------------
 
-
-function napraviLineChart()  {
-  Inicijaliziraj().then(result => {
+function napraviLineChart(dataf, labesf)  {
     var canvas1 = document.getElementById("canvas-1");
     var canvas2 = document.getElementById("canvas-2");
     var canvas3 = document.getElementById("canvas-3");
     canvas1.style.display = "block";
     canvas2.style.display = "none";
     canvas3.style.display = "none";
+
     const lineChart = new Chart($('#canvas-1'), {
         type: 'line',
         data: {
-          labels: godLabele(),
+          labels: labesf,
           //labels : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
           datasets : [
             {
@@ -329,7 +368,7 @@ function napraviLineChart()  {
               borderColor : 'rgba(220, 220, 220, 1)',
               pointBackgroundColor : 'rgba(220, 220, 220, 1)',
               pointBorderColor : '#fff',
-              data : SveGod(result),
+              data : dataf,
             },
           ]
         },
@@ -337,20 +376,11 @@ function napraviLineChart()  {
           responsive: true
         }
       })
-  })
 }
 
-function napraviBarChart() {
-  Inicijaliziraj().then(result => {
-    var godineL= godLabele();
-    var data=[];
-    godineL.forEach(element=>{
-      let poedGod= ObradiGodine(result,element);
-      let godDroga= ObradiDrogu(poedGod,"Used in Last Day","Heroin")
-      data.push(godDroga.length);
-    });
-    console.log(data);
-    console.log(godineL);
+function napraviBarChart(dataf,labelsf) {
+
+
     var canvas1 = document.getElementById("canvas-1");
     var canvas2 = document.getElementById("canvas-2");
     var canvas3 = document.getElementById("canvas-3");
@@ -361,21 +391,14 @@ function napraviBarChart() {
     const barChart = new Chart($('#canvas-2'), {
       type: 'bar',
       data: {
-        labels : godineL,
+        labels : labelsf,
         datasets : [
           {
             backgroundColor : 'rgba(220, 220, 220, 0.5)',
             borderColor : 'rgba(220, 220, 220, 0.8)',
             highlightFill: 'rgba(220, 220, 220, 0.75)',
             highlightStroke: 'rgba(220, 220, 220, 1)',
-            data : data
-          },
-          {
-            backgroundColor : 'rgba(151, 187, 205, 0.5)',
-            borderColor : 'rgba(151, 187, 205, 0.8)',
-            highlightFill : 'rgba(151, 187, 205, 0.75)',
-            highlightStroke : 'rgba(151, 187, 205, 1)',
-            data : data
+            data : dataf
           }
         ]
       },
@@ -383,19 +406,11 @@ function napraviBarChart() {
         responsive: true
       }
     })
-  })
 }
 
-function napraviDoughnutChart() {
+function napraviDoughnutChart(dataf,labelsf) {
   Inicijaliziraj().then(result => {
 
-    var godineL= godLabele();
-    var data2=[];
-    godineL.forEach(element=>{
-      let poedGod= ObradiGodine(result,element);
-      let godDroga= ObradiDrogu(poedGod,"Used in Last Day","Heroin")
-      data2.push(godDroga.length);
-    });
     // eslint-disable-next-line no-unused-vars
     var canvas1 = document.getElementById("canvas-1");
     var canvas2 = document.getElementById("canvas-2");
@@ -403,12 +418,13 @@ function napraviDoughnutChart() {
     canvas1.style.display = "none";
     canvas2.style.display = "none";
     canvas3.style.display = "block";
+
     const doughnutChart = new Chart($('#canvas-3'), {
       type: 'doughnut',
       data: {
-        labels: godineL,
+        labels: labelsf,
         datasets: [{
-          data: data2,
+          data: dataf,
           backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
           hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
         }]
@@ -499,55 +515,16 @@ function napraviPolarChart() {
 }
 
 
-function dobaviSPocetne() {
-  var povratni={};
-  var genders = Array.prototype.slice.call(document.getElementsByName("gender"));
-  let genderVal = genders.filter(element => {return element.checked; }).map(el => {return el.value;});//console.log(element.name, element.checked, element.value)
-  
-  var ages = Array.prototype.slice.call(document.getElementsByName("godine"));
-  let ageVal = ages.filter(element => {return element.checked; }).map(el => {return el.value;});//console.log(element.name, element.checked, element.value)
-  
-  var educations  = Array.prototype.slice.call(document.getElementsByName("education"));
-  let educationVal = educations.filter(element => {return element.checked; }).map(el => {return el.value;});//console.log(element.name, element.checked, element.value)
-  
-  var ethnicitys  = Array.prototype.slice.call(document.getElementsByName("ethnicity"));
-  let ethnicityVal = ethnicitys.filter(element => {return element.checked; }).map(el => {return el.value;});//console.log(element.name, element.checked, element.value)
-  
-  var nscore  = document.getElementById("nscore").value;
-  var escore  = document.getElementById("escore").value;
-  var oscore  = document.getElementById("oscore").value;
-  var ascore  = document.getElementById("ascore").value;
-  var cscore  = document.getElementById("cscore").value;
-  //var impulsiveness = document.getElementById("impulsiveness").value;
-  //var ss  = document.getElementById("ss").value;
+//-----------------------------  o b r a d a    p o d a t a k a ---------------------------------
 
 
-  
-  povratni.genders = genderVal;
-  povratni.ages = ageVal;
-  povratni.educations = educationVal;
-  povratni.ethnicitys = ethnicityVal;
-  povratni.nscore = nscore;
-  povratni.escore = escore;
-  povratni.oscore = oscore;
-  povratni.ascore = ascore;
-  povratni.cscore = cscore;
-  //povratni.impulsiveness = impulsiveness;
-  //povratni.ss = ss;
+function finalizirajPodatke(podaciF) {
+  let vrati={data:[],label:[]};
+  //console.log("PODACIFFF",podaciF);
+  let podaci = state.podaci;
+  //let podaci = await Inicijaliziraj();//
+    //console.log("PODACI",podaci)
 
-  povratni.drug=state.drug;
-  povratni.label=state.label;
-  finalizirajPodatke(povratni);
-  return povratni;
-  //UcitajSS().then(rezultat => console.log(rezultat))
-}
-
-
-async function finalizirajPodatke(podaciF) {
-  let vrati={data:[],label:[]}
-  console.log("PODACIFFF",podaciF);
-  let podaci = await Inicijaliziraj();//Inicijaliziraj().then(podaci=> {
-    console.log("PODACI",podaci)
     
       if(podaciF.ages != null && podaciF.ages.length>0) {
         podaciF.ages.forEach(element =>{
@@ -559,7 +536,7 @@ async function finalizirajPodatke(podaciF) {
       if(podaciF.genders != null && podaciF.genders.length>0) {
         vrati.data = [];
         podaciF.genders.forEach(element =>{
-          vrati.data=vrati.data.concat( ObradiSpol(podaci,element));
+          vrati.data=vrati.data.concat( ObradiGender(podaci,element));
         });
         podaci=vrati.data;
       }
@@ -582,40 +559,108 @@ async function finalizirajPodatke(podaciF) {
 
       if(podaciF.nscore != null  && podaciF.nscore!="") {
         vrati.data = [];
-        await ObradiScore(podaci,"nscore",podaciF.nscore).then(results => {
-          vrati.data=results;
-          podaci=vrati.data;
-
-        });
-        
+        vrati.data = ObradiScore(podaci,"Nscore",podaciF.nscore);
+        podaci=vrati.data;
       }
+
       if(podaciF.escore != null  && podaciF.escore!="") {
         vrati.data = [];
-        await ObradiScore(podaci,"escore",podaciF.escore).then(results => {
-          vrati.data=results;
-          podaci=vrati.data;
-        });
+        vrati.data = ObradiScore(podaci,"Escore",podaciF.escore);
+        podaci=vrati.data;
+      }
+
+      if(podaciF.cscore != null  && podaciF.cscore!="") {
+        vrati.data = [];
+        vrati.data = ObradiScore(podaci,"Cscore",podaciF.cscore)
+        podaci=vrati.data;
+      }
+
+      if(podaciF.oscore != null  && podaciF.oscore!="") {
+        vrati.data = [];
+        vrati.data = ObradiScore(podaci,"Oscore",podaciF.oscore)
+        podaci=vrati.data;
       }
 
       if(podaciF.ascore != null  && podaciF.ascore!="") {
         vrati.data = [];
-        await ObradiScore(podaci,"ascore",podaciF.ascore).then(results => {
-          vrati.data=results;
-          podaci=vrati.data;
-        });
+        vrati.data = ObradiScore(podaci,"Ascore",podaciF.ascore)
+        podaci=vrati.data;
+      }
+      
+
+      if(podaciF.drug !== "NONE" ) {
+        //console.log("FINAL222",podaci);
+        vrati.data = [];
+        vrati.data = ObradiDrogu(podaci,podaciF.ucestalost,podaciF.drug);
+        podaci=vrati.data;
       }
 
-      console.log(vrati);
+      //console.log("FINAL",vrati);
+      return podaci;
+}
 
-  //})
 
+
+
+
+
+function dobaviSPocetne() {
+  var povratni={};
+  var genders = Array.prototype.slice.call(document.getElementsByName("gender"));
+  let genderVal = genders.filter(element => {return element.checked; }).map(el => {return el.value;});
+  
+  var ages = Array.prototype.slice.call(document.getElementsByName("godine"));
+  let ageVal = ages.filter(element => {return element.checked; }).map(el => {return el.value;});
+  
+  var educations  = Array.prototype.slice.call(document.getElementsByName("education"));
+  let educationVal = educations.filter(element => {return element.checked; }).map(el => {return el.value;});
+  
+  var ethnicitys  = Array.prototype.slice.call(document.getElementsByName("ethnicity"));
+  let ethnicityVal = ethnicitys.filter(element => {return element.checked; }).map(el => {return el.value;});//console.log(element.name, element.checked, element.value)
+  
+  var ucestalosti = Array.prototype.slice.call(document.getElementsByName("ucestalost"));
+  let ucestalostVal = ucestalosti.filter(element => {return element.checked; }).map(el => {return el.value;});
+
+  var nscore  = document.getElementById("nscore").value;
+  var escore  = document.getElementById("escore").value;
+  var oscore  = document.getElementById("oscore").value;
+  var ascore  = document.getElementById("ascore").value;
+  var cscore  = document.getElementById("cscore").value;
+  //var impulsiveness = document.getElementById("impulsiveness").value;
+  //var ss  = document.getElementById("ss").value;
+
+
+  
+  povratni.genders = genderVal;
+  povratni.ages = ageVal;
+  povratni.educations = educationVal;
+  povratni.ethnicitys = ethnicityVal;
+  povratni.nscore = nscore;
+  povratni.escore = escore;
+  povratni.oscore = oscore;
+  povratni.ascore = ascore;
+  povratni.cscore = cscore;
+  povratni.ucestalost = ucestalostVal[0];
+  //povratni.impulsiveness = impulsiveness;
+  //povratni.ss = ss;
+
+  povratni.drug=state.drug;
+  povratni.label=state.label;
+  
+  return povratni;
+  //UcitajSS().then(rezultat => console.log(rezultat))
 }
 
 function selectDrug(droga2) {
   var x = document.getElementById("drogaDropdown");
   x.innerHTML = droga2;
   state.drug=droga2;
-  console.log("DROGA", droga2);
+
+  if(droga2 != "NONE") document.getElementById("firstOne").checked=true;;
+  
+  
+  //let genderVal = genders.filter(element => {return element.checked; }).map(el => {return el.value;});
+
 }
 
 
@@ -623,8 +668,64 @@ function selectLabel(labela) {
   var x = document.getElementById("labelDropdown");
   x.innerHTML = labela;
   state.label=labela;
-  console.log("Labela", labela);
+  //console.log(labela);
+  if (labela == "Age") {
+    state.labels = godLabele();
+  }
+  else if (labela == "Gender") {
+    state.labels = genderLabele();
+  }
+  else if (labela == "Education") {
+    state.labels = edukacijaLabele();
+  }
+  else if (labela == "Ethnicity") {
+    state.labels = etnicityLabele();
+  }
+  else if (labela == "Drug") {
+    state.labels = drugLabele();
+  }
+  else {
+    state.labels = scoreLabele(labela);
+  }
+
 }
 
-napraviLineChart()
+
+function napraviGrafF() {
+  let pocetna=dobaviSPocetne()
+  let data = finalizirajPodatke(pocetna);
+  console.log("POCETNa",pocetna);
+  console.log("DATA",data);
+  let finDat=[];
+
+  if(state.label=="Age")
+  {
+    finDat = state.labels.map(element => {return CountGodine(data,element);});
+  }
+    
+  else if(state.label=="Gender")
+    finDat = state.labels.map(element => {return CountGender(data,element);});
+  else if(state.label=="Ethnicity")
+    finDat = state.labels.map(element => {return CountEthnicity(data,element);});
+  else if(state.label=="Education")
+    finDat = state.labels.map(element => {return CountEducation(data,element);});
+  else if(state.label=="Drug")
+    finDat = state.labels.map(element => {return CountDrogu(data,element,pocetna.drug);});
+  else
+    finDat = state.labels.map(element => {return CountScore(data,state.label,element);});
+
+  console.log("FINDATA",finDat);
+  if(state.label=="Age" || state.label=="Education")
+    napraviLineChart(finDat,state.labels);
+  else if(state.label=="Gender" || state.label=="Ethnicity")
+    napraviDoughnutChart(finDat,state.labels)
+  else 
+    napraviBarChart(finDat,state.labels) 
+
+
+
+}
+
+
+
 

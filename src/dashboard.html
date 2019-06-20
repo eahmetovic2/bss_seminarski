@@ -253,16 +253,21 @@
                   <input type="checkbox" name="ethnicity" value="Other"> Other <br>
                 </div>
 
-                
+                <div>
+                    Personality measurements 
+                    <br>
                 <input type="Number" id="nscore" value="nscore" max="60" min="12"> Nscore <br>
                 <input type="Number" id="escore" value="escore" max="59" min="16"> Escore <br>
                 <input type="Number" id="oscore" value="oscore" max="60" min="24"> Oscore <br>
                 <input type="Number" id="ascore" value="ascore" max="60" min="12"> Ascore <br>
                 <input type="Number" id="cscore" value="cscore" max="59" min="17"> Cscore <br>
+                </div>
+                <br>
+
 
                 <div class="btn-group">
                   <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span id="drogaDropdown">Alcohol</span>
+                    <span id="drogaDropdown">Choose drug</span>
                   </button>
                   <div class="dropdown-menu">
                     <a class="dropdown-item" onclick="selectDrug('Alcohol')">Alcohol</a>
@@ -284,10 +289,22 @@
                     <a class="dropdown-item" onclick="selectDrug('Nicotine')">Nicotine</a>
                     <a class="dropdown-item" onclick="selectDrug('Semer')">Semer</a>
                     <a class="dropdown-item" onclick="selectDrug('VSA')">VSA</a>
+                    <a class="dropdown-item" onclick="selectDrug('NONE')">NONE</a>
                   </div>
                 </div>
 
-
+                <br>
+                <br>
+                <div>
+                    <input type="checkbox" id="firstOne" name="ucestalost" value="Never Used" >Never Used<br>
+                    <input type="checkbox" name="ucestalost" value="Used over a Decade Ago">Used over a Decade Ago<br>
+                    <input type="checkbox" name="ucestalost" value="Used in Last Decade">Used in Last Decade<br>
+                    <input type="checkbox" name="ucestalost" value="Used in Last Year">Used in Last Year<br>
+                    <input type="checkbox" name="ucestalost" value="Used in Last Month">Used in Last Month<br>
+                    <input type="checkbox" name="ucestalost" value="Used in Last Weekd">Used in Last Week<br>
+                    <input type="checkbox" name="ucestalost" value="Used in Last Day">Used in Last Day<br>
+                </div>
+                <br>
                 <div class="btn-group">
                   <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span id="labelDropdown">Age</span>
@@ -302,19 +319,16 @@
                     <a class="dropdown-item" onclick="selectLabel('Oscore')">Oscore</a>
                     <a class="dropdown-item" onclick="selectLabel('Ascore')">Ascore</a>
                     <a class="dropdown-item" onclick="selectLabel('Cscore')">Cscore</a>
-                    <a class="dropdown-item" onclick="selectLabel('Impulsiveness')">Impulsiveness</a>
-                    <a class="dropdown-item" onclick="selectLabel('Sensation seeing')">Sensation seeing</a>
                     <a class="dropdown-item" onclick="selectLabel('Drug')">Drug</a>
                   </div>
                 </div>
                 
                 <br>
-                <button onclick="dobaviSPocetne()">BarChart</button>
-                <button onclick="napraviDoughnutChart()">DoughnutChart</button>
-                <button onclick="napraviLineChart()">LineChart</button>
-                
+                <br>
+                <button onclick="napraviGrafF()">Kreiraj graf</button>
 
               </div>
+              <p id="Ucitavanje">Ucitavanje podataka... Molimo sacekajte...</p>
               
               <!--
               <div class="card">
