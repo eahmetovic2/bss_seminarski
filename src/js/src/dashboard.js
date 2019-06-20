@@ -697,7 +697,7 @@ function napraviGrafF() {
 
   console.log("POCETNa",pocetna);
   console.log("DATA",data);
-  
+
   let finDat=[];
 
 
