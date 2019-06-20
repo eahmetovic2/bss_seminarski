@@ -28,7 +28,8 @@ let state= {
   drug:"NONE",
   ucestalost: null,
   label:"Age",
-  labels:[]
+  labels:godLabele(),
+  trenutniChart:null
 }
 
 const papa2 = (textString) => {
@@ -334,7 +335,7 @@ function CountDrogu(podaci,ucestalost,droga) {
 
 
 function CountEducation(podaci,education) {
-  return ObradiSpol(podaci,education).length;
+  return ObradiEdukaciju(podaci,education).length;
 }
 
 function CountEthnicity (podaci,etnicity) {
@@ -349,13 +350,15 @@ function CountScore (podaci,scoreType, scoreI) {
 //-----------------------------------  C H A R T O V I ---------------------------------------
 
 function napraviLineChart(dataf, labesf)  {
-    var canvas1 = document.getElementById("canvas-1");
+
+    /*var canvas1 = document.getElementById("canvas-1");
     var canvas2 = document.getElementById("canvas-2");
     var canvas3 = document.getElementById("canvas-3");
     canvas1.style.display = "block";
     canvas2.style.display = "none";
-    canvas3.style.display = "none";
+    canvas3.style.display = "none";*/
 
+    if(state.trenutniChart != null) state.trenutniChart.destroy();
     const lineChart = new Chart($('#canvas-1'), {
         type: 'line',
         data: {
@@ -376,50 +379,53 @@ function napraviLineChart(dataf, labesf)  {
           responsive: true
         }
       })
+      state.trenutniChart=lineChart;
 }
 
 function napraviBarChart(dataf,labelsf) {
 
 
-    var canvas1 = document.getElementById("canvas-1");
-    var canvas2 = document.getElementById("canvas-2");
-    var canvas3 = document.getElementById("canvas-3");
-    canvas1.style.display = "none";
-    canvas2.style.display = "block";
-    canvas3.style.display = "none";
+  /*var canvas1 = document.getElementById("canvas-1");
+  var canvas2 = document.getElementById("canvas-2");
+  var canvas3 = document.getElementById("canvas-3");
+  canvas1.style.display = "none";
+  canvas2.style.display = "block";
+  canvas3.style.display = "none";*/
 
-    const barChart = new Chart($('#canvas-2'), {
-      type: 'bar',
-      data: {
-        labels : labelsf,
-        datasets : [
-          {
-            backgroundColor : 'rgba(220, 220, 220, 0.5)',
-            borderColor : 'rgba(220, 220, 220, 0.8)',
-            highlightFill: 'rgba(220, 220, 220, 0.75)',
-            highlightStroke: 'rgba(220, 220, 220, 1)',
-            data : dataf
-          }
-        ]
-      },
-      options: {
-        responsive: true
-      }
-    })
+  if(state.trenutniChart != null) state.trenutniChart.destroy();
+  const barChart = new Chart($('#canvas-1'), {
+    type: 'bar',
+    data: {
+      labels : labelsf,
+      datasets : [
+        {
+          backgroundColor : 'rgba(220, 220, 220, 0.5)',
+          borderColor : 'rgba(220, 220, 220, 0.8)',
+          highlightFill: 'rgba(220, 220, 220, 0.75)',
+          highlightStroke: 'rgba(220, 220, 220, 1)',
+          data : dataf
+        }
+      ]
+    },
+    options: {
+      responsive: true
+    }
+  })
+  state.trenutniChart=barChart;
 }
 
 function napraviDoughnutChart(dataf,labelsf) {
-  Inicijaliziraj().then(result => {
 
     // eslint-disable-next-line no-unused-vars
-    var canvas1 = document.getElementById("canvas-1");
+    /*var canvas1 = document.getElementById("canvas-1");
     var canvas2 = document.getElementById("canvas-2");
     var canvas3 = document.getElementById("canvas-3");
     canvas1.style.display = "none";
     canvas2.style.display = "none";
-    canvas3.style.display = "block";
+    canvas3.style.display = "block";*/
 
-    const doughnutChart = new Chart($('#canvas-3'), {
+    if(state.trenutniChart != null) state.trenutniChart.destroy();
+    const doughnutChart = new Chart($('#canvas-1'), {
       type: 'doughnut',
       data: {
         labels: labelsf,
@@ -433,11 +439,12 @@ function napraviDoughnutChart(dataf,labelsf) {
         responsive: true
       }
     })
-  })
+
+    state.trenutniChart = doughnutChart;
+    
 }
 
-function napraviRadarChart() {
-  Inicijaliziraj().then(result => {
+function napraviRadarChart(dataf,labelsf) {
 
     // eslint-disable-next-line no-unused-vars
     const radarChart = new Chart($('#canvas-4'), {
@@ -471,7 +478,6 @@ function napraviRadarChart() {
         responsive: true
       }
     })
-  })
 }
 
 
@@ -591,7 +597,9 @@ function finalizirajPodatke(podaciF) {
       if(podaciF.drug !== "NONE" ) {
         //console.log("FINAL222",podaci);
         vrati.data = [];
-        vrati.data = ObradiDrogu(podaci,podaciF.ucestalost,podaciF.drug);
+        podaciF.ucestalost.forEach(element =>{
+          vrati.data=vrati.data.concat( ObradiDrogu(podaci,element,podaciF.drug));
+        });
         podaci=vrati.data;
       }
 
@@ -640,7 +648,7 @@ function dobaviSPocetne() {
   povratni.oscore = oscore;
   povratni.ascore = ascore;
   povratni.cscore = cscore;
-  povratni.ucestalost = ucestalostVal[0];
+  povratni.ucestalost = ucestalostVal;
   //povratni.impulsiveness = impulsiveness;
   //povratni.ss = ss;
 
@@ -656,7 +664,7 @@ function selectDrug(droga2) {
   x.innerHTML = droga2;
   state.drug=droga2;
 
-  if(droga2 != "NONE") document.getElementById("firstOne").checked=true;;
+  //if(droga2 != "NONE") document.getElementById("firstOne").checked=true;
   
   
   //let genderVal = genders.filter(element => {return element.checked; }).map(el => {return el.value;});
@@ -720,9 +728,7 @@ function napraviGrafF() {
   else if(state.label=="Gender" || state.label=="Ethnicity")
     napraviDoughnutChart(finDat,state.labels)
   else 
-    napraviBarChart(finDat,state.labels) 
-
-
+    napraviBarChart(finDat,state.labels)
 
 }
 
