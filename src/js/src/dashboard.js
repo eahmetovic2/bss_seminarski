@@ -349,7 +349,7 @@ function CountScore (podaci,scoreType, scoreI) {
 
 //-----------------------------------  C H A R T O V I ---------------------------------------
 
-function napraviLineChart(dataf, labesf)  {
+function napraviLineChart(dataf, labesf,labla)  {
 
     /*var canvas1 = document.getElementById("canvas-1");
     var canvas2 = document.getElementById("canvas-2");
@@ -366,9 +366,9 @@ function napraviLineChart(dataf, labesf)  {
           //labels : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
           datasets : [
             {
-              label: 'My First dataset',
+              label: labla,
               backgroundColor : 'rgba(220, 220, 220, 0.2)',
-              borderColor : 'rgba(220, 220, 220, 1)',
+              borderColor : '#36A2EB',
               pointBackgroundColor : 'rgba(220, 220, 220, 1)',
               pointBorderColor : '#fff',
               data : dataf,
@@ -382,7 +382,7 @@ function napraviLineChart(dataf, labesf)  {
       state.trenutniChart=lineChart;
 }
 
-function napraviBarChart(dataf,labelsf) {
+function napraviBarChart(dataf,labelsf,label) {
 
 
   /*var canvas1 = document.getElementById("canvas-1");
@@ -399,7 +399,8 @@ function napraviBarChart(dataf,labelsf) {
       labels : labelsf,
       datasets : [
         {
-          backgroundColor : 'rgba(220, 220, 220, 0.5)',
+          label: label,
+          backgroundColor : '#FF6384',
           borderColor : 'rgba(220, 220, 220, 0.8)',
           highlightFill: 'rgba(220, 220, 220, 0.75)',
           highlightStroke: 'rgba(220, 220, 220, 1)',
@@ -414,7 +415,7 @@ function napraviBarChart(dataf,labelsf) {
   state.trenutniChart=barChart;
 }
 
-function napraviDoughnutChart(dataf,labelsf) {
+function napraviDoughnutChart(dataf,labelsf,label) {
 
     // eslint-disable-next-line no-unused-vars
     /*var canvas1 = document.getElementById("canvas-1");
@@ -430,9 +431,10 @@ function napraviDoughnutChart(dataf,labelsf) {
       data: {
         labels: labelsf,
         datasets: [{
+          label:label,
           data: dataf,
-          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-          hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56','#ADD26C','#C56CD2','#691414','#141469'],
+          hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56','#ADD26C','#C56CD2','#691414','#141469']
         }]
       },
       options: {
@@ -455,23 +457,13 @@ function napraviRadarChart(dataf,labelsf) {
           {
             label: 'My First dataset',
             backgroundColor: 'rgba(220, 220, 220, 0.2)',
-            borderColor: 'rgba(220, 220, 220, 1)',
+            borderColor: '#FF6384',//'rgba(220, 220, 220, 1)',
             pointBackgroundColor: 'rgba(220, 220, 220, 1)',
             pointBorderColor: '#fff',
             pointHighlightFill: '#fff',
             pointHighlightStroke: 'rgba(220, 220, 220, 1)',
             data: [65, 59, 90, 81, 56, 55, 40]
           },
-          {
-            label: 'My Second dataset',
-            backgroundColor: 'rgba(151, 187, 205, 0.2)',
-            borderColor: 'rgba(151, 187, 205, 1)',
-            pointBackgroundColor: 'rgba(151, 187, 205, 1)',
-            pointBorderColor: '#fff',
-            pointHighlightFill: '#fff',
-            pointHighlightStroke: 'rgba(151, 187, 205, 1)',
-            data: [28, 48, 40, 19, 96, 27, 100]
-          }
         ]
       },
       options: {
@@ -724,11 +716,11 @@ function napraviGrafF() {
 
   console.log("FINDATA",finDat);
   if(state.label=="Age" || state.label=="Education")
-    napraviLineChart(finDat,state.labels);
+    napraviLineChart(finDat,state.labels,"Number of people with that " + state.label);
   else if(state.label=="Gender" || state.label=="Ethnicity")
-    napraviDoughnutChart(finDat,state.labels)
+    napraviDoughnutChart(finDat,state.labels,"Number of people with that " + state.label)
   else 
-    napraviBarChart(finDat,state.labels)
+    napraviBarChart(finDat,state.labels, state.label)
 
 }
 
