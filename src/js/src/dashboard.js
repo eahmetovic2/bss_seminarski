@@ -694,9 +694,12 @@ function selectLabel(labela) {
 function napraviGrafF() {
   let pocetna=dobaviSPocetne()
   let data = finalizirajPodatke(pocetna);
+
   console.log("POCETNa",pocetna);
   console.log("DATA",data);
+  
   let finDat=[];
+
 
   if(state.label=="Age")
   {
