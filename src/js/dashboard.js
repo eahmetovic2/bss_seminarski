@@ -167,7 +167,12 @@ function uslovScore(human) {
 
   var vrijednost = this.pom.find(function (element) {
     return element[_this.vrstaScore] == _this.intenzitetScore;
-  }).Value;
+  });
+
+  if (typeof vrijednost === "undefined") {
+    vrijednost = 0;
+  } else vrijednost = vrijednost.Value;
+
   return human[this.vrstaScore] == vrijednost;
 } //------------------------------ O B R A D E ----------------------------------
 

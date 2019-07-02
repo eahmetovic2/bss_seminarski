@@ -224,7 +224,12 @@ function uslovDroga(human) {
 }
 
 function uslovScore(human) {
-  var vrijednost = this.pom.find(element => {return element[this.vrstaScore]==this.intenzitetScore}).Value;
+  var vrijednost = this.pom.find(element => {return element[this.vrstaScore]==this.intenzitetScore});
+  if (typeof vrijednost === "undefined") {
+    vrijednost = 0;
+  }
+  else 
+    vrijednost = vrijednost.Value;
   return human[this.vrstaScore] == vrijednost;
 }
 
