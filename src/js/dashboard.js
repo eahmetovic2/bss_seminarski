@@ -129,7 +129,7 @@ function UcitavanjeSvega() {
               state.cscore = resultc;
               state.cscore.length--;
               var x = document.getElementById("Ucitavanje");
-              x.innerHTML = "Podaci su ucitani, mozete pristupiti aplikaciji!"; //napraviLineChart(,);
+              x.innerHTML = "Data loaded, you can acces the application!"; //napraviLineChart(,);
 
               console.log("STATE", state);
             });
@@ -471,33 +471,53 @@ function finalizirajPodatke(podaciF) {
     podaci = vrati.data;
   }
 
-  if (podaciF.nscore != null && podaciF.nscore != "") {
+  if (podaciF.nscore != null && podaciF.nscore != "" && podaciF.nscore2 != null && podaciF.nscore2 != "") {
     vrati.data = [];
-    vrati.data = ObradiScore(podaci, "Nscore", podaciF.nscore);
+
+    for (var i = podaciF.nscore; i <= podaciF.nscore2; i++) {
+      vrati.data = vrati.data.concat(ObradiScore(podaci, "Nscore", i));
+    }
+
     podaci = vrati.data;
   }
 
-  if (podaciF.escore != null && podaciF.escore != "") {
+  if (podaciF.escore != null && podaciF.escore != "" && podaciF.escore2 != null && podaciF.escore2 != "") {
     vrati.data = [];
-    vrati.data = ObradiScore(podaci, "Escore", podaciF.escore);
+
+    for (var i = podaciF.escore; i <= podaciF.escore2; i++) {
+      vrati.data = vrati.data.concat(ObradiScore(podaci, "Escore", i));
+    }
+
     podaci = vrati.data;
   }
 
-  if (podaciF.cscore != null && podaciF.cscore != "") {
+  if (podaciF.cscore != null && podaciF.cscore != "" && podaciF.cscore2 != null && podaciF.cscore2 != "") {
     vrati.data = [];
-    vrati.data = ObradiScore(podaci, "Cscore", podaciF.cscore);
+
+    for (var i = podaciF.cscore; i <= podaciF.cscore2; i++) {
+      vrati.data = vrati.data.concat(ObradiScore(podaci, "Cscore", i));
+    }
+
     podaci = vrati.data;
   }
 
-  if (podaciF.oscore != null && podaciF.oscore != "") {
+  if (podaciF.oscore != null && podaciF.oscore != "" && podaciF.oscore2 != null && podaciF.oscore2 != "") {
     vrati.data = [];
-    vrati.data = ObradiScore(podaci, "Oscore", podaciF.oscore);
+
+    for (var i = podaciF.oscore; i <= podaciF.oscore2; i++) {
+      vrati.data = vrati.data.concat(ObradiScore(podaci, "Oscore", i));
+    }
+
     podaci = vrati.data;
   }
 
-  if (podaciF.ascore != null && podaciF.ascore != "") {
+  if (podaciF.ascore != null && podaciF.ascore != "" && podaciF.ascore2 != null && podaciF.ascore2 != "") {
     vrati.data = [];
-    vrati.data = ObradiScore(podaci, "Ascore", podaciF.ascore);
+
+    for (var i = podaciF.ascore; i <= podaciF.ascore2; i++) {
+      vrati.data = vrati.data.concat(ObradiScore(podaci, "Ascore", i));
+    }
+
     podaci = vrati.data;
   }
 
@@ -551,7 +571,12 @@ function dobaviSPocetne() {
   var escore = document.getElementById("escore").value;
   var oscore = document.getElementById("oscore").value;
   var ascore = document.getElementById("ascore").value;
-  var cscore = document.getElementById("cscore").value; //var impulsiveness = document.getElementById("impulsiveness").value;
+  var cscore = document.getElementById("cscore").value;
+  var nscore2 = document.getElementById("nscore2").value;
+  var escore2 = document.getElementById("escore2").value;
+  var oscore2 = document.getElementById("oscore2").value;
+  var ascore2 = document.getElementById("ascore2").value;
+  var cscore2 = document.getElementById("cscore2").value; //var impulsiveness = document.getElementById("impulsiveness").value;
   //var ss  = document.getElementById("ss").value;
 
   povratni.genders = genderVal;
@@ -563,6 +588,11 @@ function dobaviSPocetne() {
   povratni.oscore = oscore;
   povratni.ascore = ascore;
   povratni.cscore = cscore;
+  povratni.nscore2 = nscore2;
+  povratni.escore2 = escore2;
+  povratni.oscore2 = oscore2;
+  povratni.ascore2 = ascore2;
+  povratni.cscore2 = cscore2;
   povratni.ucestalost = ucestalostVal; //povratni.impulsiveness = impulsiveness;
   //povratni.ss = ss;
 
