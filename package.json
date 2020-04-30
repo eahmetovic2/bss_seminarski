@@ -72,7 +72,7 @@
     "flag-icon-css": "^3.3.0",
     "font-awesome": "~4.7.0",
     "fs": "0.0.1-security",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "pace-progress": "1.0.2",
     "papaparse": "^5.0.0",
     "perfect-scrollbar": "^1.4.0",
